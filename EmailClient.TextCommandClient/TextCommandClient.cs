@@ -70,9 +70,18 @@ public class TextCommandClient : IAsyncDisposable
     {
         var buffer = new byte[1024];
         StringBuilder builder = new();
-        int received;
-        while ((received = await _socket.ReceiveAsync(buffer)) != 0)
-            builder.Append(Encoding.ASCII.GetString(buffer, 0, received));
+        try
+        {
+            while (true)
+            {
+                var receiveTask = _socket.ReceiveAsync(buffer);
+                await receiveTask.WaitAsync(new TimeSpan(0, 0, 1));
+                builder.Append(Encoding.ASCII.GetString(buffer, 0, receiveTask.Result));
+            }
+        }
+        catch (TimeoutException)
+        {
+        }
         return builder.ToString();
     }
     public async ValueTask DisposeAsync()
