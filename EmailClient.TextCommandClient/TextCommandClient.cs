@@ -19,7 +19,7 @@ public class TextCommandClient : IAsyncDisposable
         _port = port;
         _socket = new(SocketType.Stream, ProtocolType.Tcp);
     }
-    public virtual async Task Connect()
+    public async Task Connect()
     {
         if (_socket.Connected)
             await _socket.DisconnectAsync(true);

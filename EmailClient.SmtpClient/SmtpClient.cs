@@ -1,16 +1,18 @@
 namespace EmailClient;
 
-public class SmtpClient: TextCommandClient
+public class SmtpClient
 {
-    public SmtpClient(string host, ushort port):
-        base(host, port)
+    private readonly TextCommandClient _client;
+    public SmtpClient(string host, ushort port)
     {
-
+        _client = new(host, port);
     }
-    public override async Task Connect()
+    public async Task Connect()
     {
-        await base.Connect();
-        var serverInfo = await ReceiveMessage();
-        var greeting = await SendMessage("EHLO");
+        await _client.Connect();
+        var serverInfo = await _client.ReceiveMessage();
+        Console.Write(serverInfo);
+        var greeting = await _client.SendMessage("EHLO");
+        Console.Write(greeting);
     }
 }
