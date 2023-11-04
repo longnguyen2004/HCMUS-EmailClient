@@ -21,7 +21,8 @@ public class TextCommandClient : IAsyncDisposable
     }
     public virtual async Task Connect()
     {
-        await _socket.DisconnectAsync(true);
+        if (_socket.Connected)
+            await _socket.DisconnectAsync(true);
         foreach (var address in (await Dns.GetHostEntryAsync(_host)).AddressList)
         {
             try
@@ -43,7 +44,10 @@ public class TextCommandClient : IAsyncDisposable
         while (_socket.Connected)
         {
             if (!_messageQueue.TryDequeue(out var item))
+            {
+                await Task.Yield();
                 continue;
+            }
             (var message, var promise) = item;
             try
             {
