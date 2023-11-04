@@ -12,7 +12,8 @@ public class SmtpClient
         await _client.Connect();
         var serverInfo = await _client.ReceiveMessage();
         Console.Write(serverInfo);
-        var greeting = await _client.SendMessage("EHLO");
+        await _client.SendMessage("EHLO");
+        var greeting = await _client.ReceiveMessage();
         Console.Write(greeting);
     }
 }

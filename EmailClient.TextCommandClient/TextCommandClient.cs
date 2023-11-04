@@ -9,8 +9,9 @@ public class TextCommandClient : IAsyncDisposable
     private readonly Socket _socket;
     private readonly string _host;
     private readonly ushort _port;
+    private byte[] _buffer;
+    private int _remaining;
     private Queue<(string, TaskCompletionSource<string>)> _messageQueue = new();
-    private Task? _messageProcessor;
     public TextCommandClient(string host, ushort port)
     {
         if (Uri.CheckHostName(host) == UriHostNameType.Unknown)
@@ -18,6 +19,8 @@ public class TextCommandClient : IAsyncDisposable
         _host = host;
         _port = port;
         _socket = new(SocketType.Stream, ProtocolType.Tcp);
+        _buffer = new byte[1024];
+        _remaining = 0;
     }
     public async Task Connect()
     {
@@ -36,53 +39,47 @@ public class TextCommandClient : IAsyncDisposable
         }
         if (!_socket.Connected)
             throw new ApplicationException("Unable to connect to server");
-        _messageProcessor = ProcessMessageQueue();
     }
     public bool Connected => _socket.Connected;
-    private async Task ProcessMessageQueue()
+    private (bool, string) ExtractLineFromBuffer()
     {
-        while (_socket.Connected)
+        var pos = Array.IndexOf(_buffer, (byte)0x0a, 0, _remaining) + 1;
+        if (_remaining == 0)
+            return (false, string.Empty);
+        // Buffer contains a non-complete line
+        if (pos == 0)
         {
-            if (!_messageQueue.TryDequeue(out var item))
-            {
-                await Task.Yield();
-                continue;
-            }
-            (var message, var promise) = item;
-            try
-            {
-                await _socket.SendAsync(Encoding.ASCII.GetBytes(message + '\n'));
-                promise.TrySetResult(await ReceiveMessage());
-            }
-            catch (Exception e)
-            {
-                promise.TrySetException(e);
-            }
+            string returnVal = Encoding.ASCII.GetString(_buffer, 0, _remaining);
+            _remaining = 0;
+            _buffer = new byte[1024];
+            return (false, returnVal);
+        }
+        // Buffer contains at least 1 line
+        else
+        {
+            string returnVal = Encoding.ASCII.GetString(_buffer, 0, pos);
+            _remaining -= pos;
+            _buffer = _buffer[pos..];
+            return (true, returnVal);
         }
     }
-    public Task<string> SendMessage(string message)
+    public async Task SendMessage(string message)
     {
-        TaskCompletionSource<string> task = new();
-        _messageQueue.Enqueue((message, task));
-        return task.Task;
+        await _socket.SendAsync(Encoding.ASCII.GetBytes(message + '\n'));
     }
     public async Task<string> ReceiveMessage()
     {
-        var buffer = new byte[1024];
         StringBuilder builder = new();
-        try
+        while (true)
         {
-            while (true)
-            {
-                var receiveTask = _socket.ReceiveAsync(buffer);
-                await receiveTask.WaitAsync(new TimeSpan(0, 0, 1));
-                builder.Append(Encoding.ASCII.GetString(buffer, 0, receiveTask.Result));
-            }
+            var (stop, line) = ExtractLineFromBuffer();
+            builder.Append(line);
+            if (stop)
+                return builder.ToString();
+            var receiveTask = _socket.ReceiveAsync(_buffer);
+            await receiveTask.WaitAsync(new TimeSpan(0, 0, 5));
+            _remaining += receiveTask.Result;
         }
-        catch (TimeoutException)
-        {
-        }
-        return builder.ToString();
     }
     public async ValueTask DisposeAsync()
     {
