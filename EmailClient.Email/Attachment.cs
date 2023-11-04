@@ -10,7 +10,6 @@ public interface IAttachment {
 
 public class AttachmentLocal: IAttachment {
     private readonly FileInfo _file;
-
     public string FileName => _file.Name;
     public long FileSize => _file.Length;
     public string MimeType => MimeTypes.GetMimeType(_file.Name);
