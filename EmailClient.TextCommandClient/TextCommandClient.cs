@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EmailClient;
 
-public class TextCommandClient : IAsyncDisposable
+public partial class TextCommandClient : IAsyncDisposable
 {
     private readonly Socket _socket;
     private readonly string _host;
@@ -43,9 +43,9 @@ public class TextCommandClient : IAsyncDisposable
     public bool Connected => _socket.Connected;
     private (bool, string) ExtractLineFromBuffer()
     {
-        var pos = Array.IndexOf(_buffer, (byte)0x0a, 0, _remaining) + 1;
         if (_remaining == 0)
             return (false, string.Empty);
+        var pos = Array.IndexOf(_buffer, (byte)0x0a, 0, _remaining) + 1;
         // Buffer contains a non-complete line
         if (pos == 0)
         {
@@ -75,7 +75,7 @@ public class TextCommandClient : IAsyncDisposable
             var (stop, line) = ExtractLineFromBuffer();
             builder.Append(line);
             if (stop)
-                return builder.ToString();
+                return builder.ToString().ReplaceLineEndings("");
             var receiveTask = _socket.ReceiveAsync(_buffer);
             await receiveTask.WaitAsync(new TimeSpan(0, 0, 5));
             _remaining += receiveTask.Result;
