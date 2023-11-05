@@ -101,7 +101,7 @@ public partial class TextCommandClient : IAsyncDisposable
             }
             else
             {
-                if (_remaining >= 0)
+                if (_remaining > 0)
                 {
                     Array.Copy(_buffer, 0, current.Array!, current.Offset, _remaining);
                     current = current.Slice(_remaining);
