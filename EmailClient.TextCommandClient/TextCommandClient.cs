@@ -6,6 +6,7 @@ namespace EmailClient;
 
 public partial class TextCommandClient : IAsyncDisposable
 {
+    private readonly static byte[] _newline = { 0x0a };
     private readonly Socket _socket;
     private readonly string _host;
     private readonly ushort _port;
@@ -72,7 +73,8 @@ public partial class TextCommandClient : IAsyncDisposable
     }
     public async Task SendMessage(string message)
     {
-        await _socket.SendAsync(Encoding.ASCII.GetBytes(message + '\n'));
+        await _socket.SendAsync(Encoding.ASCII.GetBytes(message));
+        await _socket.SendAsync(_newline);
     }
     public async Task<string> ReceiveMessage()
     {
