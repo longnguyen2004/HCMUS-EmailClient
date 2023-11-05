@@ -20,10 +20,34 @@ public class SmtpClient
             return builder.ToString();
         }
     }
+    private class SmtpCommand
+    {
+        private SmtpCommand(string value) { Value = value; }
+
+        public string Value { get; private set; }
+
+        public static SmtpCommand HELO { get; } = new("HELO");
+        public static SmtpCommand EHLO { get; } = new("EHLO");
+        public static SmtpCommand MAIL_FROM { get; } = new("MAIL FROM");
+        public static SmtpCommand RCPT_TO { get; } = new("RCPT_TO");
+        public static SmtpCommand DATA { get; } = new("DATA");
+        public static SmtpCommand QUIT { get; } = new("QUIT");
+        public static SmtpCommand RSET { get; } = new("RSET");
+
+        public override string ToString() => Value;
+    }
     private readonly TextCommandClient _client;
     public SmtpClient(string host, ushort port)
     {
         _client = new(host, port);
+    }
+    private async Task<SmtpResponse> SendCommand(SmtpCommand command, string parameter = "")
+    {
+        if (parameter.Length == 0)
+            await _client.SendMessage(command.ToString());
+        else
+            await _client.SendMessage($"{command} {parameter}");
+        return await ParseResponse();
     }
     private async Task<SmtpResponse> ParseResponse()
     {
@@ -43,9 +67,8 @@ public class SmtpClient
         var serverInfo = await ParseResponse();
         Console.Write(serverInfo);
 
-        await _client.SendMessage("EHLO");
-        var greeting = await ParseResponse();
+        var greeting = await SendCommand(SmtpCommand.EHLO);
         Console.Write(greeting);
     }
-    
+
 }
