@@ -1,10 +1,12 @@
-using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace EmailClient;
 
-public class Pop3Client
-{
+public partial class Pop3Client
+{  
+    [GeneratedRegex("^(\\+OK|-ERR) ?(.*?)$")]
+    private static partial Regex ResponseStatusRegex();
     private readonly TextCommandClient _client;
 
     public Pop3Client(string host, ushort port)
@@ -12,24 +14,32 @@ public class Pop3Client
         _client = new(host, port);
     }
 
-    public async Task<Pop3Response> SendMessage(Pop3Command command, string message)
+    private async Task<Pop3Response> SendCommand(Pop3Command command, string parameter = "")
     {
-        await _client.SendMessage(command + message);
-        var response = await ParseResponse(command.Multiline);
-        return response;
+        if (parameter.Length == 0)
+            await _client.SendMessage(command.ToString());
+        else
+            await _client.SendMessage($"{command} {parameter}");
+        return await ParseResponse(command.Multiline);
     }
 
     public class Pop3Response 
     {
-        public bool status {get; set;}
-        public List<string> messages {get;} = new();
+        public bool Status { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public List<string> AdditionalLines { get; } = new();
         public override string ToString()
         {
             StringBuilder builder = new();
-            builder.Append(status + " ");
-            for (var i = 0; i < messages.Count; ++i)
-                builder.AppendLine(messages[i]);
-
+            builder.Append(Status ? "+OK" : "-ERR");
+            if (Message != string.Empty)
+            {
+                builder.Append(' ');
+                builder.Append(Message);
+            }
+            builder.AppendLine();
+            foreach (var line in AdditionalLines)
+                builder.AppendLine(line);
             return builder.ToString();
         }
     }
@@ -38,36 +48,40 @@ public class Pop3Client
     {
         private Pop3Command(string value, bool multiline) { Value = value; Multiline = multiline; }
         public string Value { get; private set; }
-        public bool Multiline { get; set; }
-        public static Pop3Command CAPA => new("CAPA", false);
+        public bool Multiline { get; private set; }
+        public static Pop3Command CAPA => new("CAPA", true);
         public static Pop3Command UIDL => new("UIDL", true);
-        public static Pop3Command USER => new("USER ", false);
-        public static Pop3Command PASS => new("PASS ", false);
+        public static Pop3Command USER => new("USER", false);
+        public static Pop3Command PASS => new("PASS", false);
         public static Pop3Command STAT => new("STAT", false);
         public static Pop3Command LIST => new("LIST", true);
-        public static Pop3Command RETR => new("RETR ", true);
-        public static Pop3Command DELE => new("DELE ", false);
+        public static Pop3Command RETR => new("RETR", true);
+        public static Pop3Command DELE => new("DELE", false);
         public static Pop3Command NOOP => new("NOOP", false);
         public static Pop3Command RSET => new("RSET", false);
         public static Pop3Command QUIT => new("QUIT", false);
         public override string ToString() => Value;
     }
-
-
     private async Task<Pop3Response> ParseResponse(bool multiline = false)
     {
         Pop3Response response = new();
         string line = await _client.ReceiveMessage();
-        response.status = line.StartsWith("+OK");
+        var match = ResponseStatusRegex().Match(line);
+        if (!match.Success)
+            throw new ApplicationException($"Expecting +OK or -ERR, got {line} (fix the parser!!!)");
+        response.Status = match.Groups[1].Value == "+OK";
+        response.Message = match.Groups[2].Value;
 
         if (multiline)
-            while (line != ".")
+        {
+            while (true)
             {
-                response.messages.Add(line);
                 line = await _client.ReceiveMessage();
+                if (line == ".") break;
+                if (line.StartsWith('.')) line = line[1..];
+                response.AdditionalLines.Add(line);
             }
-        else
-            response.messages.Add(line.Replace(response.status ? "+OK " : "-ERR ", ""));
+        }
         return response;
 
     }
@@ -78,22 +92,22 @@ public class Pop3Client
         var serverInfo = await ParseResponse();
         Console.Write(serverInfo);
 
-        var capa = await SendMessage(Pop3Command.CAPA, "");
+        var capa = await SendCommand(Pop3Command.CAPA, "");
         Console.Write(capa);
 
-        var user = await SendMessage(Pop3Command.USER, "minhnhat@hcmus.edu.vn");
+        var user = await SendCommand(Pop3Command.USER, "minhnhat@hcmus.edu.vn");
         Console.Write(user);
 
-        var pass = await SendMessage(Pop3Command.PASS, "pass");
+        var pass = await SendCommand(Pop3Command.PASS, "pass");
         Console.Write(pass);
 
-        var stat = await SendMessage(Pop3Command.STAT, "");
+        var stat = await SendCommand(Pop3Command.STAT, "");
         Console.Write(stat);
 
-        var list = await SendMessage(Pop3Command.LIST, "");
+        var list = await SendCommand(Pop3Command.LIST, "");
         Console.Write(list);
 
-        var uidl = await SendMessage(Pop3Command.UIDL, "");
+        var uidl = await SendCommand(Pop3Command.UIDL, "");
         Console.Write(uidl);
     }
 }
