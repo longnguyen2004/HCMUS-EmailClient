@@ -89,24 +89,27 @@ public partial class TextCommandClient : IAsyncDisposable
     public async Task ReceiveBytesExact(ArraySegment<byte> buffer)
     {
         if (buffer.Array == null) return;
-        var required = buffer.Count;
-        if (_remaining >= required)
+        var current = buffer;
+        while (current.Count > 0)
         {
-            Array.Copy(_buffer, 0, buffer.Array, buffer.Offset, required);
-            _remaining -= required;
-            _buffer = _buffer[required..];
-        }
-        else
-        {
-            ArraySegment<byte> newSegment = buffer.Slice(_remaining);
-            if (_remaining >= 0)
+            if (_remaining >= current.Count)
             {
-                Array.Copy(_buffer, 0, buffer.Array, buffer.Offset, _remaining);
-                _remaining = 0;
-                _buffer = new byte[1024];
+                Array.Copy(_buffer, 0, current.Array, current.Offset, current.Count);
+                _remaining -= current.Count;
+                _buffer = _buffer[current.Count..];
+                return;
             }
-            await FillBuffer();
-            await ReceiveBytesExact(newSegment);
+            else
+            {
+                if (_remaining >= 0)
+                {
+                    Array.Copy(_buffer, 0, current.Array, current.Offset, _remaining);
+                    buffer = buffer.Slice(_remaining);
+                    _remaining = 0;
+                    _buffer = new byte[1024];
+                }
+                await FillBuffer();
+            }
         }
     }
     public async ValueTask DisposeAsync()
