@@ -41,6 +41,13 @@ public partial class TextCommandClient : IAsyncDisposable
             throw new ApplicationException("Unable to connect to server");
     }
     public bool Connected => _socket.Connected;
+    private async Task<int> FillBuffer()
+    {
+        var receiveTask = _socket.ReceiveAsync(_buffer);
+        await receiveTask.WaitAsync(new TimeSpan(0, 0, 5));
+        _remaining += receiveTask.Result;
+        return receiveTask.Result;
+    }
     private (bool, string) ExtractLineFromBuffer()
     {
         if (_remaining == 0)
@@ -76,9 +83,30 @@ public partial class TextCommandClient : IAsyncDisposable
             builder.Append(line);
             if (stop)
                 return builder.ToString().ReplaceLineEndings("");
-            var receiveTask = _socket.ReceiveAsync(_buffer);
-            await receiveTask.WaitAsync(new TimeSpan(0, 0, 5));
-            _remaining += receiveTask.Result;
+            await FillBuffer();
+        }
+    }
+    public async Task ReceiveBytesExact(ArraySegment<byte> buffer)
+    {
+        if (buffer.Array == null) return;
+        var required = buffer.Count;
+        if (_remaining >= required)
+        {
+            Array.Copy(_buffer, 0, buffer.Array, buffer.Offset, required);
+            _remaining -= required;
+            _buffer = _buffer[required..];
+        }
+        else
+        {
+            ArraySegment<byte> newSegment = buffer.Slice(_remaining);
+            if (_remaining >= 0)
+            {
+                Array.Copy(_buffer, 0, buffer.Array, buffer.Offset, _remaining);
+                _remaining = 0;
+                _buffer = new byte[1024];
+            }
+            await FillBuffer();
+            await ReceiveBytesExact(newSegment);
         }
     }
     public async ValueTask DisposeAsync()
