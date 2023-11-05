@@ -94,7 +94,7 @@ public partial class TextCommandClient : IAsyncDisposable
         {
             if (_remaining >= current.Count)
             {
-                Array.Copy(_buffer, 0, current.Array, current.Offset, current.Count);
+                Array.Copy(_buffer, 0, current.Array!, current.Offset, current.Count);
                 _remaining -= current.Count;
                 _buffer = _buffer[current.Count..];
                 return;
@@ -103,8 +103,8 @@ public partial class TextCommandClient : IAsyncDisposable
             {
                 if (_remaining >= 0)
                 {
-                    Array.Copy(_buffer, 0, current.Array, current.Offset, _remaining);
-                    buffer = buffer.Slice(_remaining);
+                    Array.Copy(_buffer, 0, current.Array!, current.Offset, _remaining);
+                    current = current.Slice(_remaining);
                     _remaining = 0;
                     _buffer = new byte[1024];
                 }
