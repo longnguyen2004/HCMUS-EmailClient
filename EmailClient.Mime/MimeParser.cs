@@ -21,15 +21,15 @@ partial class MimeParser
     private static partial Regex HeaderRegex();
     [GeneratedRegex(@"(?<key>[A-Za-z-]+?)=(?<value>[^\s""]+?|"".+?"")(;|$)")]
     private static partial Regex HeaderExtraDataRegex();
-    private readonly Stream _stream;
+    private readonly StreamReader _reader;
     private enum MimeParserState
     {
         Headers,
         Body
     }
-    public MimeParser(Stream stream)
+    public MimeParser(StreamReader reader)
     {
-        _stream = stream;
+        _reader = reader;
     }
     private async Task<(MimeEntity, bool)> ParseImpl(StreamReader reader, string? boundary = null)
     {
@@ -140,7 +140,6 @@ partial class MimeParser
     }
     public async Task<MimeEntity> Parse()
     {
-        StreamReader reader = new(_stream);
-        return (await ParseImpl(reader)).Item1;
+        return (await ParseImpl(_reader)).Item1;
     }
 }
