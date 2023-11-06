@@ -6,8 +6,8 @@ namespace EmailClient;
 class MimeParserException : ApplicationException
 {
     private readonly string _message;
-    private readonly string _line;
-    public MimeParserException(string message, string line)
+    private readonly string? _line;
+    public MimeParserException(string message, string? line)
     {
         _message = message;
         _line = line;
@@ -31,7 +31,7 @@ partial class MimeParser
     {
         _reader = reader;
     }
-    private async Task<(MimeEntity, bool)> ParseImpl(StreamReader reader, string? boundary = null)
+    private async Task<(MimeEntity?, string?)> ParseImpl(StreamReader reader, HashSet<string?> endOfParse)
     {
         var state = MimeParserState.Headers;
         MimeEntity? entity = null;
@@ -42,45 +42,22 @@ partial class MimeParser
         while (true)
         {
             line = await reader.ReadLineAsync();
-            if (boundary != null)
+            if (endOfParse.Contains(line))
             {
-                if (line == null)
+                if (state == MimeParserState.Headers)
                 {
-                    // Uh oh, we reached the end but we're expecting a boundary
-                    throw new MimeParserException("Unexpected end of stream while expecting boundary", "");
+                    // We're still in the header parsing state, throw an exception
+                    throw new MimeParserException("Unexpected end of parse line while parsing header", line);
                 }
-                if (line.StartsWith($"--{boundary}"))
-                {
-                    if (entity == null)
-                    {
-                        if (headers != null)
-                        {
-                            // There is a header, so we assume that it's a regular MimePart
-                            entity = new MimePart(headers, bodyBuilder.ToString());
-                        }
-                        else
-                        {
-                            throw new MimeParserException("Unexpected boundary while parsing", line);
-                        }
-                    }
-                    return (entity, line == $"--{boundary}");
-                }
+                // headers isn't null, and entity isn't created => assume not multipart
+                if (headers != null)
+                    entity ??= new MimePart(headers, bodyBuilder.ToString());
+                return (entity, line);
             }
             if (line == null)
             {
-                if (entity == null)
-                {
-                    if (headers != null)
-                    {
-                        // There is a header, so we assume that it's a regular MimePart
-                        entity = new MimePart(headers, bodyBuilder.ToString());
-                    }
-                    else
-                    {
-                        throw new MimeParserException("Unexpected end of stream while parsing", "");
-                    }
-                }
-                return (entity, false);
+                // We reached the end without encountering the end of parsing line
+                throw new MimeParserException("Unexpected end of stream while parsing", null);
             }
             switch (state)
             {
@@ -113,17 +90,26 @@ partial class MimeParser
                         var contentType = headers!["Content-Type"];
                         if (contentType.Value.StartsWith("multipart"))
                         {
-                            var nextBoundary = contentType.ExtraValues["boundary"];
-                            if (line != $"--{nextBoundary}")
+                            var boundary = contentType.ExtraValues["boundary"];
+                            var boundaryContinue = $"--{boundary}";
+                            var boundaryStop = $"--{boundary}--";
+                            if (line != boundaryContinue)
                                 continue;
                             List<MimeEntity> parts = new();
-                            bool continueParsing;
+                            string? lastLine;
                             do
                             {
-                                (var part, continueParsing) = await ParseImpl(reader, nextBoundary);
-                                parts.Add(part);
+                                (var part, lastLine) = await ParseImpl(
+                                    reader,
+                                    new() {
+                                        boundaryContinue,
+                                        boundaryStop
+                                    }
+                                );
+                                if (part != null)
+                                    parts.Add(part);
                             }
-                            while (continueParsing);
+                            while (lastLine != boundaryStop);
                             entity = new MimeMultipart(headers, parts);
                         }
                         else
@@ -138,8 +124,10 @@ partial class MimeParser
             }
         }
     }
-    public async Task<MimeEntity> Parse()
+    public async Task<MimeEntity?> Parse(string? endParseLine = null)
     {
-        return (await ParseImpl(_reader)).Item1;
+        return (await ParseImpl(_reader, new() {
+            endParseLine
+        })).Item1;
     }
 }
