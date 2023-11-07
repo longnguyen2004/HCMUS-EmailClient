@@ -8,7 +8,6 @@ public partial class TextCommandClient : IAsyncDisposable
 {
     private readonly static byte[] _newline = { 0x0d, 0x0a };
     private readonly Socket _socket;
-    private NetworkStream? _netStream;
     private StreamReader? _reader;
     private readonly string _host;
     private readonly ushort _port;
@@ -37,16 +36,13 @@ public partial class TextCommandClient : IAsyncDisposable
         }
         if (!_socket.Connected)
             throw new ApplicationException("Unable to connect to server");
-        _netStream = new(_socket, false);
-        _reader = new(_netStream);
+        _reader = new(new NetworkStream(_socket, false));
     }
     public async Task Disconnect()
     {
         _reader?.Dispose();
-        _netStream?.Dispose();
         await _socket.DisconnectAsync(false);
         _reader = null;
-        _netStream = null;
     }
     public bool Connected => _socket.Connected;
     public async Task SendMessage(string message)
