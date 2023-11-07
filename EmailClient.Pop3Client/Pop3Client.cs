@@ -8,7 +8,7 @@ public partial class Pop3Client
     [GeneratedRegex("^(\\+OK|-ERR) ?(.*?)$")]
     private static partial Regex ResponseStatusRegex();
     private readonly TextCommandClient _client;
-
+    public bool Connected => _client.Connected;
     public Pop3Client(string host, ushort port)
     {
         _client = new(host, port);

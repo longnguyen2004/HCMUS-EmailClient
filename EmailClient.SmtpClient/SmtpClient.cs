@@ -37,6 +37,7 @@ public class SmtpClient
         public override string ToString() => Value;
     }
     private readonly TextCommandClient _client;
+    public bool Connected => _client.Connected;
     public SmtpClient(string host, ushort port)
     {
         _client = new(host, port);
@@ -70,5 +71,9 @@ public class SmtpClient
         var greeting = await SendCommand(SmtpCommand.EHLO);
         Console.Write(greeting);
     }
-
+    public async Task Disconnect()
+    {
+        var goodbye = await SendCommand(SmtpCommand.QUIT);
+        await _client.Disconnect();
+    }
 }
