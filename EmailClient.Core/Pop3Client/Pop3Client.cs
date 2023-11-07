@@ -110,10 +110,9 @@ public partial class Pop3Client
         var uidl = await SendCommand(Pop3Command.UIDL, "");
         Console.Write(uidl);
     }
-
     public async Task Disconnect()
     {
         await SendCommand(Pop3Command.QUIT);
-        await _client.DisposeAsync();
+        await _client.Disconnect();
     }
 }
