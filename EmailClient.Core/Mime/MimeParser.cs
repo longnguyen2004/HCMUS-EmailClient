@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace EmailClient;
 
-class MimeParserException : ApplicationException
+public class MimeParserException : ApplicationException
 {
     private readonly string _message;
     private readonly string? _line;
@@ -15,7 +15,7 @@ class MimeParserException : ApplicationException
     public override string Message { get => $"{_message} (parsing line \"{_line}\")"; }
 }
 
-partial class MimeParser
+public partial class MimeParser
 {
     [GeneratedRegex(@"^(?<key>[A-Za-z-]+?): ?(?<value>.+?)(;|$)")]
     private static partial Regex HeaderRegex();
