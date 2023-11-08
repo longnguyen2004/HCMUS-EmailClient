@@ -16,6 +16,7 @@ public partial class Email
     public string? Subject { get; set; }
     public string? Body { get; set; }
     public string? HtmlBody { get; set; }
+    public List<IAttachment> Attachments { get; } = new();
     private static void ParseEmailAddresses(string emails, ICollection<string> list)
     {
         foreach (var match in EmailAddressRegex().Matches(emails).Cast<Match>())
@@ -58,6 +59,21 @@ public partial class Email
                         Body ??= altPart.Body;
                     else if (altPart.ContentType == "text/html")
                         HtmlBody ??= altPart.Body;
+                }
+            }
+            foreach (var part in mimeMultipart.Parts)
+            {
+                if (!part.Headers.TryGetValue("Content-Disposition", out var contentDisposition))
+                    continue;
+                if (contentDisposition.Value == "attachment")
+                {
+                    Attachments.Add(
+                        new AttachmentRemote(
+                            part.Body,
+                            contentDisposition.ExtraValues["filename"],
+                            part.ContentType
+                        )
+                    );
                 }
             }
         }
