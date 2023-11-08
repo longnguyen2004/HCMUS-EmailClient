@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using MCollections;
 
 namespace EmailClient;
 
@@ -9,9 +10,9 @@ public partial class Email
     )]
     public static partial Regex EmailAddressRegex();
     public string? From { get; }
-    public SortedSet<string> To { get; } = new();
-    public SortedSet<string> Cc { get; } = new();
-    public SortedSet<string> Bcc { get; } = new();
+    public IndexedSet<string> To { get; } = new();
+    public IndexedSet<string> Cc { get; } = new();
+    public IndexedSet<string> Bcc { get; } = new();
     public string? Subject { get; }
     public string? Body { get; }
     public string? HtmlBody { get; }
