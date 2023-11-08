@@ -94,7 +94,10 @@ public partial class MimeParser
                             var boundaryContinue = $"--{boundary}";
                             var boundaryStop = $"--{boundary}--";
                             if (line != boundaryContinue)
+                            {
+                                bodyBuilder.AppendLine(line);
                                 continue;
+                            }
                             List<MimeEntity> parts = new();
                             string? lastLine;
                             do
@@ -110,7 +113,9 @@ public partial class MimeParser
                                     parts.Add(part);
                             }
                             while (lastLine != boundaryStop);
-                            entity = new MimeMultipart(headers, parts, boundary);
+                            entity = new MimeMultipart(
+                                bodyBuilder.ToString(), headers, parts, boundary
+                            );
                         }
                         else
                         {

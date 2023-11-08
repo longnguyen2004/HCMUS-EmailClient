@@ -64,6 +64,7 @@ public class MimePart : MimeEntity
 
 public class MimeMultipart : MimeEntity
 {
+    public string Fallback { get; }
     public string Boundary { get; }
     public List<MimeEntity> Parts { get; } = new();
     public override string Body
@@ -84,12 +85,14 @@ public class MimeMultipart : MimeEntity
         }
     }
     public MimeMultipart(
+        string fallback,
         MimeHeaders headers,
         List<MimeEntity> parts,
         string? boundary = null
     ) :
         base(headers)
     {
+        Fallback = fallback;
         Parts = parts;
         Boundary = boundary ?? Guid.NewGuid().ToString();
     }
