@@ -110,7 +110,7 @@ public partial class MimeParser
                                     parts.Add(part);
                             }
                             while (lastLine != boundaryStop);
-                            entity = new MimeMultipart(headers, parts);
+                            entity = new MimeMultipart(headers, parts, boundary);
                         }
                         else
                         {
