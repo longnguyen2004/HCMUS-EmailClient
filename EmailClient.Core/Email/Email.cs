@@ -9,18 +9,19 @@ public partial class Email
         """(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"""
     )]
     public static partial Regex EmailAddressRegex();
-    public string? From { get; }
+    public string? From { get; set; }
     public IndexedSet<string> To { get; } = new();
     public IndexedSet<string> Cc { get; } = new();
     public IndexedSet<string> Bcc { get; } = new();
-    public string? Subject { get; }
-    public string? Body { get; }
-    public string? HtmlBody { get; }
+    public string? Subject { get; set; }
+    public string? Body { get; set; }
+    public string? HtmlBody { get; set; }
     private static void ParseEmailAddresses(string emails, ICollection<string> list)
     {
         foreach (var match in EmailAddressRegex().Matches(emails).Cast<Match>())
             list.Add(match.Value);
     }
+    public Email() {}
     public Email(MimeEntity mime)
     {
         if (mime.Headers.TryGetValue("From", out var from))
