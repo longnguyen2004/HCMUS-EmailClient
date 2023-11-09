@@ -39,7 +39,6 @@ public abstract partial class MimeEntity
     protected MimeEntity(MimeHeaders headers)
     {
         Headers = headers;
-        Headers["MIME-Version"] = new("1.0");
     }
     public override string ToString()
     {

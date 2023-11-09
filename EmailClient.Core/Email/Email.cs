@@ -138,6 +138,7 @@ public partial class Email
                 withAttachments.Parts.Add(new MimeAttachment(attachment));
             message = withAttachments;
         }
+        message.Headers["MIME-Version"] = new("1.0");
         if (From != null)
             message.Headers["From"] = new(From);
         if (To.Count > 0)
