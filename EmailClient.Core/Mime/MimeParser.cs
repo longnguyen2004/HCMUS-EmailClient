@@ -5,14 +5,13 @@ namespace EmailClient;
 
 public class MimeParserException : ApplicationException
 {
-    private readonly string _message;
     private readonly string? _line;
-    public MimeParserException(string message, string? line)
+    public MimeParserException(string message, string? line):
+        base(message)
     {
-        _message = message;
         _line = line;
     }
-    public override string Message { get => $"{_message} (parsing line \"{_line}\")"; }
+    public override string Message { get => $"{base.Message} (parsing line \"{_line}\")"; }
 }
 
 public partial class MimeParser
