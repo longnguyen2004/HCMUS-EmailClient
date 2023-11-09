@@ -24,6 +24,7 @@ public partial class MimeHeaderValue
             builder.Append(extraKey);
             builder.Append("=\"");
             builder.Append(EscapedChars().Replace(extraValue, "\\$1"));
+            builder.Append("\"");
         }
         return builder.ToString();
     }
