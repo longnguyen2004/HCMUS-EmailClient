@@ -79,6 +79,15 @@ public partial class Email
             }
         }
     }
+    public IEnumerable<string> GetRecipients()
+    {
+        foreach (var email in To)
+            yield return email;
+        foreach (var email in Cc)
+            yield return email;
+        foreach (var email in Bcc)
+            yield return email;
+    }
     public MimeEntity ToMime()
     {
         static MimePart createBodyMime(string body, string contentType)
