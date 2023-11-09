@@ -44,7 +44,9 @@ public class SmtpClient
     }
     private async Task<SmtpResponse> SendCommand(SmtpCommand command, string parameter = "")
     {
-        await _client.SendMessage(string.Format(command.Value, parameter));
+        await _client.SendMessage(
+            Encoding.ASCII.GetBytes(string.Format(command.Value, parameter))
+        );
         return await ParseResponse();
     }
     private async Task<SmtpResponse> ParseResponse()
@@ -53,7 +55,7 @@ public class SmtpClient
         string line;
         do
         {
-            line = await _client.ReceiveMessage();
+            line = Encoding.ASCII.GetString(await _client.ReceiveMessage()).ReplaceLineEndings("");
             response.Code = int.Parse(line.AsSpan(0, 3));
             response.Messages.Add(line[4..]);
         } while (line[3] != ' ');

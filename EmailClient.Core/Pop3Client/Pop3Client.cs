@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -18,7 +17,7 @@ public class Pop3Exception : ApplicationException
 }
 
 public partial class Pop3Client
-{  
+{
     [GeneratedRegex("^(\\+OK|-ERR) ?(.*?)$")]
     private static partial Regex ResponseStatusRegex();
     private readonly TextCommandClient _client;
@@ -31,13 +30,13 @@ public partial class Pop3Client
     private async Task<Pop3Response> SendCommand(Pop3Command command, string parameter = "")
     {
         if (parameter.Length == 0)
-            await _client.SendMessage(command.ToString());
+            await _client.SendMessage(Encoding.ASCII.GetBytes(command.ToString()));
         else
-            await _client.SendMessage($"{command} {parameter}");
+            await _client.SendMessage(Encoding.ASCII.GetBytes($"{command} {parameter}"));
         return await ParseResponse(command.Multiline);
     }
 
-    public class Pop3Response 
+    public class Pop3Response
     {
         public bool Status { get; set; }
         public string Message { get; set; } = string.Empty;
@@ -79,7 +78,9 @@ public partial class Pop3Client
     private async Task<Pop3Response> ParseResponse(bool multiline = false)
     {
         Pop3Response response = new();
-        string line = await _client.ReceiveMessage();
+        string line = Encoding.ASCII.GetString(
+            await _client.ReceiveMessage()
+        ).ReplaceLineEndings("");
         Console.WriteLine(line);
         var match = ResponseStatusRegex().Match(line);
         if (!match.Success)
@@ -89,13 +90,12 @@ public partial class Pop3Client
 
         if (multiline)
         {
-            while (true)
-            {
-                line = await _client.ReceiveMessage();
-                if (line == ".") break;
-                if (line.StartsWith('.')) line = line[1..];
+            while ((
+                line = Encoding.ASCII.GetString(
+                    await _client.ReceiveMessage()
+                ).ReplaceLineEndings("")
+            ) != ".")
                 response.AdditionalLines.Add(line);
-            }
         }
         return response;
     }
@@ -118,7 +118,8 @@ public partial class Pop3Client
             throw new Pop3Exception(passResponse.Message, Pop3Command.PASS.ToString());
     }
 
-    public async Task<HashSet<String>> CAPA() {
+    public async Task<HashSet<String>> CAPA()
+    {
         var response = await SendCommand(Pop3Command.CAPA);
         if (!response.Status)
             throw new Pop3Exception(response.Message, Pop3Command.CAPA.ToString());
@@ -134,14 +135,14 @@ public partial class Pop3Client
         return capabilities.Contains(capability);
     }
 
-    public async Task<HashSet<(int,String)>> UIDL()
+    public async Task<HashSet<(int, String)>> UIDL()
     {
         if (!await IsCapable("UIDL"))
             throw new Pop3Exception("Server doesn't have UIDL capability");
         var response = await SendCommand(Pop3Command.UIDL);
         if (!response.Status)
             throw new Pop3Exception(response.Message, Pop3Command.UIDL.ToString());
-        HashSet<(int,String)> uids = new();
+        HashSet<(int, String)> uids = new();
         foreach (var line in response.AdditionalLines)
         {
             var match = Regex.Match(line, "^(?<id>\\d+) (?<uid>.*)$");
@@ -150,7 +151,8 @@ public partial class Pop3Client
         return uids;
     }
 
-    public async Task RETR(int id, string path) {
+    public async Task RETR(int id, string path)
+    {
         var response = await SendCommand(Pop3Command.RETR, id.ToString());
         if (!response.Status)
             throw new Pop3Exception(response.Message, Pop3Command.RETR.ToString());

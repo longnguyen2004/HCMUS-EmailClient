@@ -6,7 +6,6 @@ namespace EmailClient;
 
 public partial class TextCommandClient : IAsyncDisposable
 {
-    private readonly static byte[] _newline = { 0x0d, 0x0a };
     private readonly byte[] _buffer = new byte[1024];
     private readonly Socket _socket;
     private Stream? _stream;
@@ -47,14 +46,14 @@ public partial class TextCommandClient : IAsyncDisposable
         await _socket.DisconnectAsync(false);
     }
     public bool Connected => _socket.Connected;
-    public async Task SendMessage(string message)
+    public async Task SendMessage(ArraySegment<byte> message)
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        await _socket.SendAsync(Encoding.ASCII.GetBytes(message));
-        await _socket.SendAsync(_newline);
+        await _stream!.WriteAsync(message);
+        await _stream!.WriteAsync(StreamHelper.NewLine);
     }
-    public async Task<string> ReceiveMessage()
+    public async Task<byte[]> ReceiveMessage()
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
@@ -65,13 +64,18 @@ public partial class TextCommandClient : IAsyncDisposable
                 new TimeSpan(0, 0, 5)
             );
         } while (_buffer[received++] != 0x0a);
-        return Encoding.ASCII.GetString(_buffer, 0, received).ReplaceLineEndings("");
+        // handles dot stuffing
+        if (_buffer[0] == 46 && _buffer[1] == 46)
+            return _buffer[1..received];
+        return _buffer[0..received];
     }
-    public Task<int> Send(ArraySegment<byte> buffer)
+    public Task Send(ArraySegment<byte> buffer)
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        return _socket.SendAsync(buffer);
+        return _stream!.WriteAsync(buffer).AsTask().WaitAsync(
+            new TimeSpan(0, 0, 5)
+        );
     }
     public Task ReceiveExactly(ArraySegment<byte> buffer)
     {
