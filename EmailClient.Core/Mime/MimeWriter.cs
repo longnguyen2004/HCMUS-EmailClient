@@ -22,8 +22,12 @@ public partial class MimeHeaderValue
 }
 public abstract partial class MimeEntity
 {
-    protected abstract Task WriteBodyAsync(Stream stream, CancellationToken token);
-    public async Task WriteToAsync(Stream stream, CancellationToken token = default)
+    protected abstract Task WriteBodyAsync(
+        Stream stream, bool dotStuffing, CancellationToken token
+    );
+    public async Task WriteToAsync(
+        Stream stream, bool dotStuffing = false, CancellationToken token = default
+    )
     {
         foreach (var (key, value) in Headers)
         {
@@ -33,13 +37,15 @@ public abstract partial class MimeEntity
             await stream.WriteAsync(StreamHelper.NewLine, token);
         }
         await stream.WriteAsync(StreamHelper.NewLine, token);
-        await WriteBodyAsync(stream, token);
+        await WriteBodyAsync(stream, dotStuffing, token);
     }
 }
 
 public partial class MimePart
 {
-    protected override async Task WriteBodyAsync(Stream stream, CancellationToken token)
+    protected override async Task WriteBodyAsync(
+        Stream stream, bool dotStuffing, CancellationToken token
+    )
     {
         var charset = "ascii";
         // is 8 bit, need to change encoding
@@ -50,13 +56,20 @@ public partial class MimePart
             // This should definitely be available, or else we'll have no clue how to write
             charset = Headers["Content-Type"].ExtraValues["charset"];
         }
-        await stream.WriteAsync(Encoding.GetEncoding(charset).GetBytes(Body), token);
+        var body = Body;
+        if (dotStuffing)
+        {
+            body = body.Replace("\n.", "\n..");
+        }
+        await stream.WriteAsync(Encoding.GetEncoding(charset).GetBytes(body), token);
     }
 }
 
 public partial class MimeMultipart
 {
-    protected override async Task WriteBodyAsync(Stream stream, CancellationToken token)
+    protected override async Task WriteBodyAsync(
+        Stream stream, bool dotStuffing, CancellationToken token
+    )
     {
         await stream.WriteAsync(Encoding.ASCII.GetBytes(Fallback), token);
         await stream.WriteAsync(StreamHelper.NewLine, token);
@@ -65,7 +78,7 @@ public partial class MimeMultipart
         foreach (var part in Parts)
         {
             await stream.WriteAsync(boundary, token);
-            await part.WriteToAsync(stream, token);
+            await part.WriteToAsync(stream, dotStuffing, token);
         }
         await stream.WriteAsync(boundaryStop, token);
     }
@@ -73,7 +86,7 @@ public partial class MimeMultipart
 
 public partial class MimeAttachment
 {
-    protected override async Task WriteBodyAsync(Stream stream, CancellationToken token)
+    protected override async Task WriteBodyAsync(Stream stream, bool _, CancellationToken token)
     {
         using var b64Stream = Attachment.ToBase64();
         var buffer = new byte[72];
