@@ -164,7 +164,8 @@ public partial class MimeParser
                             }
                             while (lastLine != boundaryStop);
                             entity = new MimeMultipart(
-                                bodyBuilder.ToString(), headers, parts, boundary
+                                headers, parts, bodyBuilder.ToString(),
+                                contentType.Value.Replace("multipart/", ""), boundary
                             );
                         }
                         else

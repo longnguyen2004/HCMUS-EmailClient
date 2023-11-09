@@ -8,11 +8,12 @@ public partial class MimeHeaderValue
 {
     [GeneratedRegex("""(["\\])""")]
     public static partial Regex EscapedChars();
-    public string Value { get; private set; }
-    public Dictionary<string, string> ExtraValues { get; } = new();
-    public MimeHeaderValue(string value)
+    public string Value { get; }
+    public Dictionary<string, string> ExtraValues { get; }
+    public MimeHeaderValue(string value, Dictionary<string, string>? extraValues = null)
     {
         Value = value;
+        ExtraValues = extraValues ?? new();
     }
     public override string ToString()
     {
@@ -24,13 +25,13 @@ public partial class MimeHeaderValue
             builder.Append(extraKey);
             builder.Append("=\"");
             builder.Append(EscapedChars().Replace(extraValue, "\\$1"));
-            builder.Append("\"");
+            builder.Append('"');
         }
         return builder.ToString();
     }
 }
 
-public abstract class MimeEntity
+public abstract partial class MimeEntity
 {
     public MimeHeaders Headers { get; }
     public abstract string Body { get; }
@@ -54,7 +55,7 @@ public abstract class MimeEntity
     }
 }
 
-public class MimePart : MimeEntity
+public partial class MimePart : MimeEntity
 {
     public override string Body { get; }
     public MimePart(MimeHeaders headers, string body) : base(headers)
@@ -63,7 +64,7 @@ public class MimePart : MimeEntity
     }
 }
 
-public class MimeMultipart : MimeEntity
+public partial class MimeMultipart : MimeEntity
 {
     public string Fallback { get; }
     public string Boundary { get; }
@@ -86,9 +87,10 @@ public class MimeMultipart : MimeEntity
         }
     }
     public MimeMultipart(
-        string fallback,
         MimeHeaders headers,
         List<MimeEntity> parts,
+        string fallback,
+        string multipartType = "mixed",
         string? boundary = null
     ) :
         base(headers)
@@ -96,5 +98,37 @@ public class MimeMultipart : MimeEntity
         Fallback = fallback;
         Parts = parts;
         Boundary = boundary ?? Guid.NewGuid().ToString();
+        Headers["Content-Type"] = new($"multipart/{multipartType}", new(){
+            {"boundary", Boundary}
+        });
+    }
+}
+
+public partial class MimeAttachment : MimeEntity
+{
+    public IAttachment Attachment { get; }
+    public override string Body
+    {
+        get
+        {
+            using StreamReader reader = new(Attachment.ToBase64());
+            return reader.ReadToEnd();
+        }
+    }
+    public MimeAttachment(IAttachment attachment) :
+        base(new())
+    {
+        Attachment = attachment;
+        Headers["Content-Type"] = new(
+            attachment.MimeType, new(){
+                {"name", attachment.FileName}
+            }
+        );
+        Headers["Content-Disposition"] = new(
+            "attachment", new(){
+                {"filename", attachment.FileName}
+            }
+        );
+        Headers["Content-Transfer-Encoding"] = new("base64");
     }
 }
