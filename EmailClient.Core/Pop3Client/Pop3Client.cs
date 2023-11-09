@@ -1,7 +1,21 @@
+using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace EmailClient;
+
+public class Pop3Exception : ApplicationException
+{
+    private readonly string _message;
+    private readonly string? _command;
+    public Pop3Exception(string message, string? command = null)
+    {
+        _message = message;
+        _command = command;
+    }
+
+    public override string Message { get => $"Pop3Client Error Occurred While Sending {_command}: {_message}"; }
+}
 
 public partial class Pop3Client
 {  
@@ -55,7 +69,7 @@ public partial class Pop3Client
         public static Pop3Command PASS => new("PASS", false);
         public static Pop3Command STAT => new("STAT", false);
         public static Pop3Command LIST => new("LIST", true);
-        public static Pop3Command RETR => new("RETR", true);
+        public static Pop3Command RETR => new("RETR", false);
         public static Pop3Command DELE => new("DELE", false);
         public static Pop3Command NOOP => new("NOOP", false);
         public static Pop3Command RSET => new("RSET", false);
@@ -66,6 +80,7 @@ public partial class Pop3Client
     {
         Pop3Response response = new();
         string line = await _client.ReceiveMessage();
+        Console.WriteLine(line);
         var match = ResponseStatusRegex().Match(line);
         if (!match.Success)
             throw new ApplicationException($"Expecting +OK or -ERR, got {line} (fix the parser!!!)");
@@ -83,36 +98,74 @@ public partial class Pop3Client
             }
         }
         return response;
-
     }
 
     public async Task Connect()
     {
         await _client.Connect();
         var serverInfo = await ParseResponse();
-        Console.Write(serverInfo);
-
-        var capa = await SendCommand(Pop3Command.CAPA, "");
-        Console.Write(capa);
-
-        var user = await SendCommand(Pop3Command.USER, "minhnhat@hcmus.edu.vn");
-        Console.Write(user);
-
-        var pass = await SendCommand(Pop3Command.PASS, "pass");
-        Console.Write(pass);
-
-        var stat = await SendCommand(Pop3Command.STAT, "");
-        Console.Write(stat);
-
-        var list = await SendCommand(Pop3Command.LIST, "");
-        Console.Write(list);
-
-        var uidl = await SendCommand(Pop3Command.UIDL, "");
-        Console.Write(uidl);
+        if (!serverInfo.Status)
+            throw new Pop3Exception(serverInfo.Message);
     }
+
+    public async Task Login(string user, string password)
+    {
+        var userResponse = await SendCommand(Pop3Command.USER, user);
+        if (!userResponse.Status)
+            throw new Pop3Exception(userResponse.Message, Pop3Command.USER.ToString());
+        var passResponse = await SendCommand(Pop3Command.PASS, password);
+        if (!passResponse.Status)
+            throw new Pop3Exception(passResponse.Message, Pop3Command.PASS.ToString());
+    }
+
+    public async Task<HashSet<String>> CAPA() {
+        var response = await SendCommand(Pop3Command.CAPA);
+        if (!response.Status)
+            throw new Pop3Exception(response.Message, Pop3Command.CAPA.ToString());
+        HashSet<String> capabilities = new();
+        foreach (var line in response.AdditionalLines)
+            capabilities.Add(line);
+        return capabilities;
+    }
+
+    public async Task<bool> IsCapable(string capability)
+    {
+        var capabilities = await CAPA();
+        return capabilities.Contains(capability);
+    }
+
+    public async Task<HashSet<(int,String)>> UIDL()
+    {
+        if (!await IsCapable("UIDL"))
+            throw new Pop3Exception("Server doesn't have UIDL capability");
+        var response = await SendCommand(Pop3Command.UIDL);
+        if (!response.Status)
+            throw new Pop3Exception(response.Message, Pop3Command.UIDL.ToString());
+        HashSet<(int,String)> uids = new();
+        foreach (var line in response.AdditionalLines)
+        {
+            var match = Regex.Match(line, "^(?<id>\\d+) (?<uid>.*)$");
+            uids.Add((int.Parse(match.Groups["id"].Value), match.Groups["uid"].Value));
+        }
+        return uids;
+    }
+
+    public async Task RETR(int id, string path) {
+        var response = await SendCommand(Pop3Command.RETR, id.ToString());
+        if (!response.Status)
+            throw new Pop3Exception(response.Message, Pop3Command.RETR.ToString());
+        int buffer_size = int.Parse(response.Message.Replace("+OK ", ""));
+        byte[] buffer = new byte[buffer_size];
+        using FileStream stream = new(path, FileMode.Create, FileAccess.Write);
+        await _client.ReceiveExactly(buffer);
+        await stream.WriteAsync(buffer);
+        await _client.ReceiveMessage();
+    }
+
     public async Task Disconnect()
     {
         await SendCommand(Pop3Command.QUIT);
         await _client.Disconnect();
     }
+
 }
