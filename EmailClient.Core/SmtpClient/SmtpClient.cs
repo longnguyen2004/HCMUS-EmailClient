@@ -26,10 +26,10 @@ public class SmtpClient
 
         public string Value { get; private set; }
 
-        public static SmtpCommand HELO { get; } = new("HELO");
-        public static SmtpCommand EHLO { get; } = new("EHLO");
-        public static SmtpCommand MAIL_FROM { get; } = new("MAIL FROM");
-        public static SmtpCommand RCPT_TO { get; } = new("RCPT_TO");
+        public static SmtpCommand HELO { get; } = new("HELO {0}");
+        public static SmtpCommand EHLO { get; } = new("EHLO {0}");
+        public static SmtpCommand MAIL_FROM { get; } = new("MAIL FROM:<{0}>");
+        public static SmtpCommand RCPT_TO { get; } = new("RCPT TO:<{0}>");
         public static SmtpCommand DATA { get; } = new("DATA");
         public static SmtpCommand QUIT { get; } = new("QUIT");
         public static SmtpCommand RSET { get; } = new("RSET");
@@ -44,10 +44,7 @@ public class SmtpClient
     }
     private async Task<SmtpResponse> SendCommand(SmtpCommand command, string parameter = "")
     {
-        if (parameter.Length == 0)
-            await _client.SendMessage(command.ToString());
-        else
-            await _client.SendMessage($"{command} {parameter}");
+        await _client.SendMessage(string.Format(command.Value, parameter));
         return await ParseResponse();
     }
     private async Task<SmtpResponse> ParseResponse()
@@ -66,14 +63,20 @@ public class SmtpClient
     {
         await _client.Connect();
         var serverInfo = await ParseResponse();
-        Console.Write(serverInfo);
-
         var greeting = await SendCommand(SmtpCommand.EHLO);
-        Console.Write(greeting);
     }
     public async Task Disconnect()
     {
         var goodbye = await SendCommand(SmtpCommand.QUIT);
         await _client.Disconnect();
+    }
+    public async Task SendEmail(Email email)
+    {
+        var fromRes = await SendCommand(SmtpCommand.MAIL_FROM, email.From);
+        foreach (var recipient in email.GetRecipients())
+        {
+            var toRes = await SendCommand(SmtpCommand.RCPT_TO, recipient);
+        }
+        
     }
 }
