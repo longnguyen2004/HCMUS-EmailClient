@@ -74,11 +74,12 @@ public partial class MimeMultipart
         await stream.WriteAsync(Encoding.ASCII.GetBytes(Fallback), token);
         await stream.WriteAsync(StreamHelper.NewLine, token);
         var boundary = Encoding.ASCII.GetBytes($"--{Boundary}\r\n");
-        var boundaryStop = Encoding.ASCII.GetBytes($"--{Boundary}--\r\n");
+        var boundaryStop = Encoding.ASCII.GetBytes($"--{Boundary}--");
         foreach (var part in Parts)
         {
             await stream.WriteAsync(boundary, token);
             await part.WriteToAsync(stream, dotStuffing, token);
+            await stream.WriteAsync(StreamHelper.NewLine, token);
         }
         await stream.WriteAsync(boundaryStop, token);
     }
