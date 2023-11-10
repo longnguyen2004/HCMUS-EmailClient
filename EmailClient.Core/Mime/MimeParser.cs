@@ -6,7 +6,7 @@ namespace EmailClient;
 public class MimeParserException : ApplicationException
 {
     private readonly string? _line;
-    public MimeParserException(string message, string? line):
+    public MimeParserException(string message, string? line) :
         base(message)
     {
         _line = line;
@@ -102,11 +102,11 @@ public partial class MimeParser
                     entity ??= new MimePart(headers, body);
                     return (entity, line);
                 }
-                if (line == null)
-                {
-                    // We reached the end without encountering the end of parsing line
-                    throw new MimeParserException("Unexpected end of stream while parsing", null);
-                }
+            }
+            if (line == null)
+            {
+                // We reached the end without encountering the end of parsing line
+                throw new MimeParserException("Unexpected end of stream while parsing", null);
             }
             switch (state)
             {
