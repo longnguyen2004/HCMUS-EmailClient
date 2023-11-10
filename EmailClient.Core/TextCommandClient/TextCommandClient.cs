@@ -8,9 +8,9 @@ public partial class TextCommandClient : IAsyncDisposable
 {
     private readonly byte[] _buffer = new byte[1024];
     private readonly Socket _socket;
-    private Stream? _stream;
     private readonly string _host;
     private readonly ushort _port;
+    public Stream? SocketStream { get; private set; }
     public TextCommandClient(string host, ushort port)
     {
         if (Uri.CheckHostName(host) == UriHostNameType.Unknown)
@@ -36,13 +36,13 @@ public partial class TextCommandClient : IAsyncDisposable
         }
         if (!_socket.Connected)
             throw new ApplicationException("Unable to connect to server");
-        _stream = new BufferedStream(new NetworkStream(_socket, false));
+        SocketStream = new BufferedStream(new NetworkStream(_socket, false));
     }
     public async Task Disconnect()
     {
         if (!Connected) return;
-        await _stream!.DisposeAsync();
-        _stream = null;
+        await SocketStream!.DisposeAsync();
+        SocketStream = null;
         await _socket.DisconnectAsync(false);
     }
     public bool Connected => _socket.Connected;
@@ -50,8 +50,8 @@ public partial class TextCommandClient : IAsyncDisposable
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        await _stream!.WriteAsync(message);
-        await _stream!.WriteAsync(StreamHelper.NewLine);
+        await SocketStream!.WriteAsync(message);
+        await SocketStream!.WriteAsync(StreamHelper.NewLine);
     }
     public async Task<byte[]> ReceiveMessage()
     {
@@ -60,7 +60,7 @@ public partial class TextCommandClient : IAsyncDisposable
         var received = 0;
         do
         {
-            await _stream!.ReadExactlyAsync(_buffer, received, 1).AsTask().WaitAsync(
+            await SocketStream!.ReadExactlyAsync(_buffer, received, 1).AsTask().WaitAsync(
                 new TimeSpan(0, 0, 5)
             );
         } while (_buffer[received++] != 0x0a);
@@ -73,7 +73,7 @@ public partial class TextCommandClient : IAsyncDisposable
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        return _stream!.WriteAsync(buffer).AsTask().WaitAsync(
+        return SocketStream!.WriteAsync(buffer).AsTask().WaitAsync(
             new TimeSpan(0, 0, 5)
         );
     }
@@ -81,7 +81,7 @@ public partial class TextCommandClient : IAsyncDisposable
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        return _stream!.ReadExactlyAsync(buffer).AsTask().WaitAsync(
+        return SocketStream!.ReadExactlyAsync(buffer).AsTask().WaitAsync(
             new TimeSpan(0, 0, 5)
         );
     }

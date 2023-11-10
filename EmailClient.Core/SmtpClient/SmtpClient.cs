@@ -74,11 +74,17 @@ public class SmtpClient
     }
     public async Task SendEmail(Email email)
     {
-        var fromRes = await SendCommand(SmtpCommand.MAIL_FROM, email.From);
+        var fromRes = await SendCommand(SmtpCommand.MAIL_FROM, email.From.ToStringPunycode());
         foreach (var recipient in email.GetRecipients())
         {
-            var toRes = await SendCommand(SmtpCommand.RCPT_TO, recipient);
+            var toRes = await SendCommand(SmtpCommand.RCPT_TO, recipient.ToStringPunycode());
         }
-        
+        var dataRes = await SendCommand(SmtpCommand.DATA);
+        var mime = email.ToMime();
+        await mime.WriteToAsync(_client.SocketStream!, true);
+        await _client.SocketStream!.WriteAsync(StreamHelper.NewLine);
+        await _client.SocketStream.WriteAsync("."u8.ToArray());
+        await _client.SocketStream.WriteAsync(StreamHelper.NewLine);
+        var finishRes = await _client.ReceiveMessage();
     }
 }
