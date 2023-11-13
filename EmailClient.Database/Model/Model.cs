@@ -21,8 +21,19 @@ public partial class EmailContext: DbContext
             .IsRequired(false);
         
         modelBuilder.Entity<EmailEntry>()
+            .Property(e => e.IsRead)
+            .HasColumnName("is_read")
+            .HasDefaultValue(false);
+
+        modelBuilder.Entity<EmailEntry>()
             .Property(e => e.Email)
             .HasColumnName("email")
             .HasConversion<EmailConverter>();
+
+        modelBuilder.Entity<EmailEntry>()
+            .HasIndex(e => e.Filter);
+        
+        modelBuilder.Entity<EmailEntry>()
+            .HasIndex(e => e.IsRead);
     }
 }

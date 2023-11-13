@@ -6,7 +6,8 @@ namespace EmailClient.Database;
 public class EmailEntry
 {
     public string Id { get; set; }
-    public string Filter { get; set; }
+    public string? Filter { get; set; }
+    public bool IsRead { get; set; }
     public Email Email { get; set; }
 }
 
@@ -26,6 +27,6 @@ public class EmailContextFactory: IDesignTimeDbContextFactory<EmailContext>
 {
     public EmailContext CreateDbContext(string[] args)
     {
-        return new EmailContext(args[0]);
+        return new EmailContext("blah");
     }
 }
