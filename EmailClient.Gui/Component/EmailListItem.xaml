@@ -1,0 +1,18 @@
+﻿<Grid x:Class="EmailClient.Gui.Component.EmailListItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EmailClient.Gui.Component"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="300"
+             HorizontalAlignment="Stretch">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="1*"/>
+    </Grid.RowDefinitions>
+
+    <TextBlock HorizontalAlignment="Left" Text="{Binding Subject}" TextTrimming="WordEllipsis" FontWeight="Bold" FontSize="14"/>
+    <TextBlock HorizontalAlignment="Left" Text="{Binding From, Mode=OneWay, StringFormat='From: {0}'}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Grid.Row="1"/>
+
+</Grid>

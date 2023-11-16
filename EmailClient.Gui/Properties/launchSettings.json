@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EmailClient.Gui": {
+      "commandName": "Project",
+      "workingDirectory": "$(SolutionDir)"
+    }
+  }
+}
