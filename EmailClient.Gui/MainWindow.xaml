@@ -34,6 +34,7 @@
                             <Setter Property="Background" Value="White" />
                         </DataTrigger>
                     </Style.Triggers>
+                    <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItem_PreviewMouseLeftButtonUp"/>
                 </Style>
             </ListBox.Resources>
             <ListBox.ItemTemplate>

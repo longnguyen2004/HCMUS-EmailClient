@@ -24,11 +24,13 @@ namespace EmailClient.Gui
     {
         private readonly EmailContext _context = new("test.db");
         private CollectionViewSource emailCollectionViewSource;
+
         public MainWindow()
         {
             InitializeComponent();
             emailCollectionViewSource = (CollectionViewSource)FindResource(nameof(emailCollectionViewSource));
         }
+
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await Task.Run(() => {
@@ -36,6 +38,23 @@ namespace EmailClient.Gui
                 _context.Emails.Load();
             });
             emailCollectionViewSource.Source = _context.Emails.Local.ToObservableCollection();
+        }
+
+        private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var listBoxItem = sender as ListBoxItem;
+
+            if (listBoxItem?.DataContext is EmailEntry selectedEmail)
+            {
+                // Update the IsRead property to true
+                selectedEmail.IsRead = true;
+
+                // Save changes to the database
+                _context.SaveChanges();
+
+                // Refresh the collection view to reflect the changes in the ListBox
+                emailCollectionViewSource.View.Refresh();
+            }
         }
     }
 }
