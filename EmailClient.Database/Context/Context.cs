@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace EmailClient.Database;
 
+
 #nullable disable
 
 public class EmailEntry

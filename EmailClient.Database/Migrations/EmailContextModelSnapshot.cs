@@ -42,7 +42,6 @@ namespace EmailClient.Database.Migrations
                     b.HasIndex("Filter");
 
                     b.HasIndex("IsRead");
-
                     b.ToTable("emails", (string)null);
                 });
 #pragma warning restore 612, 618
