@@ -64,6 +64,7 @@ public partial class Email
     public IndexedSet<EmailAddress> To { get; set; } = new();
     public IndexedSet<EmailAddress> Cc { get; set; } = new();
     public IndexedSet<EmailAddress> Bcc { get; set; } = new();
+    public DateTime? Date { get; set; }
     public string? Subject { get; set; }
     public string? Body { get; set; }
     public string? HtmlBody { get; set; }
@@ -79,6 +80,8 @@ public partial class Email
             EmailAddress.ParseEmailAddresses(cc.Value, Cc);
         if (mime.Headers.TryGetValue("Bcc", out var bcc))
             EmailAddress.ParseEmailAddresses(bcc.Value, Bcc);
+        if (mime.Headers.TryGetValue("Date", out var date))
+            Date = DateTime.Parse(date.Value);
         if (mime.Headers.TryGetValue("Subject", out var subject))
             Subject = subject.Value;
         MessageId = mime.Headers["Message-ID"].Value[1..^1];
@@ -188,6 +191,8 @@ public partial class Email
             message.Headers["To"] = new(string.Join(", ", To.Select(email => email.ToStringPunycode())));
         if (Cc.Count > 0)
             message.Headers["Cc"] = new(string.Join(", ", Cc.Select(email => email.ToStringPunycode())));
+        if (Date != null)
+            message.Headers["Date"] = new(string.Format("{0:r}", Date));
         if (Subject != null)
             message.Headers["Subject"] = new(Subject);
 
