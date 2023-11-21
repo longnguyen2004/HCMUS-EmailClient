@@ -17,7 +17,7 @@ public partial class Configuration: ObservableObject
         [ObservableProperty]
         private string? pop3Host;
         [ObservableProperty]
-        private short pop3Port;
+        private ushort pop3Port;
 
         public object Clone()
         {
