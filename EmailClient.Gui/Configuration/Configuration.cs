@@ -7,15 +7,15 @@ public partial class Configuration: ObservableObject
 {
     public partial class Login: ObservableObject, ICloneable {
         [ObservableProperty]
-        private string? email;
+        private string email = string.Empty;
         [ObservableProperty]
-        private string? password;
+        private string password = string.Empty;
         [ObservableProperty]
-        private string? smtpHost;
+        private string smtpHost = string.Empty;
         [ObservableProperty]
-        private short smtpPort;
+        private ushort smtpPort;
         [ObservableProperty]
-        private string? pop3Host;
+        private string pop3Host = string.Empty;
         [ObservableProperty]
         private ushort pop3Port;
 

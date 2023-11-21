@@ -20,10 +20,10 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-        <Menu VerticalAlignment="Center" Grid.ColumnSpan="2" Height="18">
+        <Menu VerticalAlignment="Top" Grid.ColumnSpan="2">
             <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
-                <MenuItem HorizontalAlignment="Left" Header="Đăng xuất" VerticalAlignment="Center" FontSize="10" Width="Auto"/>
-                <MenuItem HorizontalAlignment="Left" Header="Làm mới" VerticalAlignment="Center" FontSize="10" Width="Auto" Click="RefreshButton_Click"/>
+                <MenuItem Header="Đăng xuất" Click="LogoutThenLogin"/>
+                <MenuItem Header="Làm mới" Click="RefreshButton_Click"/>
             </MenuItem>
         </Menu>
         <Button Content="Soạn mail" BorderThickness="1.5" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>

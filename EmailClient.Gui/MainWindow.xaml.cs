@@ -24,7 +24,7 @@ namespace EmailClient.Gui
     /// </summary>
     public partial class MainWindow : Window
     {
-        private EmailContext _context;
+        private EmailContext? _context;
         private CollectionViewSource emailCollectionViewSource;
 
 
@@ -41,6 +41,7 @@ namespace EmailClient.Gui
             if (ok != true)
             {
                 Close();
+                return;
             }
             var app = (App)Application.Current;
             app.GlobalConfig.General = login.LocalLogin;
@@ -58,16 +59,23 @@ namespace EmailClient.Gui
         }
         private async Task Logout()
         {
-            await Task.Run(() => {
+            emailCollectionViewSource.Source = null;
+            if (_context == null)
+                throw new ApplicationException("_context is null here, which it shouldn't be");
+            await Task.Run(() =>
+            {
                 _context.SaveChanges();
                 _context.Dispose();
             });
-            emailCollectionViewSource.Source = null;
         }
-
+        private async void LogoutThenLogin(object sender, RoutedEventArgs e)
+        {
+            await Logout();
+            await Login();
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Login();
+            _ = Login();
             var app = (App)Application.Current;
             AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
             AccountBar.Visibility = Visibility.Visible;
@@ -75,7 +83,7 @@ namespace EmailClient.Gui
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
-            Logout();
+            _ = Logout();
         }
 
         private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)

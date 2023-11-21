@@ -70,38 +70,28 @@ public partial class MimeParser
                     throw new MimeParserException("Unexpected end of parse line while parsing header", line);
                 }
                 // headers isn't null, and entity isn't created => assume not multipart
-                if (headers != null)
+                if (entity == null && headers != null)
                 {
-                    string body;
-                    var hasEncoding = headers.TryGetValue("Content-Transfer-Encoding", out var encoding);
-                    if (hasEncoding)
-                    {
-                        // I really hope no one uses binary MIME...
-                        if (encoding.Value == "7bit" || encoding.Value == "8bit")
-                            body = bodyBuilder.ToString();
-                        else
-                            body = bodyBuilder.ToString().ReplaceLineEndings("");
-                    }
-                    else
-                    {
-                        body = bodyBuilder.ToString();
-                    }
+                    string body = bodyBuilder.ToString();
                     if (
                         headers.TryGetValue("Content-Disposition", out var disposition)
                         && disposition.Value == "attachment"
                     )
                     {
+                        entity = new MimeAttachment(
+                            new AttachmentRemote(
+                                body.ReplaceLineEndings(""),
+                                disposition.ExtraValues["filename"],
+                                headers["Content-Type"].Value
+                            )
+                        );
                     }
-                    else if (hasEncoding)
+                    else
                     {
-                        if (encoding.Value == "base64")
-                            body = Encoding.GetEncoding(
-                                headers!["Content-Type"].ExtraValues["charset"]
-                            ).GetString(Convert.FromBase64String(body));
+                        entity = new MimePart(headers, body);
                     }
-                    entity ??= new MimePart(headers, body);
-                    return (entity, line);
                 }
+                return (entity, line);
             }
             if (line == null)
             {
