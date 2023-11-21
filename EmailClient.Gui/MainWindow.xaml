@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:EmailClient.Gui"
         xmlns:component="clr-namespace:EmailClient.Gui.Component"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800"
+        Loaded="Window_Loaded" Unloaded="Window_Unloaded">
     <Window.Resources>
         <CollectionViewSource x:Key="emailCollectionViewSource"/>
     </Window.Resources>
