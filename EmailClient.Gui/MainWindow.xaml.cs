@@ -70,5 +70,17 @@ namespace EmailClient.Gui
         {
             Logout();
         }
+
+        private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var listBoxItem = sender as ListBoxItem;
+
+            if (listBoxItem?.DataContext is EmailEntry selectedEmail)
+            {
+                selectedEmail.IsRead = true;
+                _context.SaveChanges();
+                emailCollectionViewSource.View.Refresh();
+            }
+        }
     }
 }
