@@ -13,17 +13,32 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" MinHeight="18"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-        <Menu VerticalAlignment="Top" Grid.ColumnSpan="2">
-            <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top"/>
+        <Menu VerticalAlignment="Center" Grid.ColumnSpan="2" Height="18">
+            <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
+                <MenuItem HorizontalAlignment="Left" Header="Đăng xuất" VerticalAlignment="Center" FontSize="10" Width="Auto"/>
+                <MenuItem HorizontalAlignment="Left" Header="Làm mới" VerticalAlignment="Center" FontSize="10" Width="Auto" Click="RefreshButton_Click"/>
+            </MenuItem>
         </Menu>
-        <ListBox ItemsSource="{Binding Source={StaticResource emailCollectionViewSource}}" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <Button Content="Soạn mail" BorderThickness="1.5" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
+        <TextBlock
+                   TextWrapping="Wrap"
+                   Margin="10,5,0,0"
+                   FontSize="20"
+                   Grid.Row="1"
+                   Grid.Column="2"
+                   HorizontalAlignment="Stretch"
+                   TextAlignment="Left"
+                   FontWeight="Bold"
+                   Name="SubjectBar"
+                   TextOptions.TextFormattingMode="Display"/>
+        <ListBox ItemsSource="{Binding Source={StaticResource emailCollectionViewSource}}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                 <Style TargetType="{x:Type ListBoxItem}">
@@ -46,7 +61,16 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <TextBlock Grid.Column="1" 
+                Width="Auto" 
+                Height="18" 
+                Margin="366,0,0,0" 
+                Name="AccountBar" 
+                FontWeight="Bold" 
+                HorizontalAlignment="Right" Background ="Transparent" />
+
     </Grid>
+
 
 
 </Window>

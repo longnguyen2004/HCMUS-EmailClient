@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,10 +26,13 @@ namespace EmailClient.Gui
     {
         private EmailContext _context;
         private CollectionViewSource emailCollectionViewSource;
+
+
         public MainWindow()
         {
             InitializeComponent();
             emailCollectionViewSource = (CollectionViewSource)FindResource(nameof(emailCollectionViewSource));
+            AccountBar.Visibility = Visibility.Hidden;
         }
         private async Task Login()
         {
@@ -64,6 +68,9 @@ namespace EmailClient.Gui
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Login();
+            var app = (App)Application.Current;
+            AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
+            AccountBar.Visibility = Visibility.Visible;
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
@@ -79,9 +86,11 @@ namespace EmailClient.Gui
             {
                 selectedEmail.IsRead = true;
                 _context.SaveChanges();
+                SubjectBar.Text = selectedEmail.Email.Subject;
                 emailCollectionViewSource.View.Refresh();
             }
         }
+
 
         private async Task RefreshMailbox()
         {
@@ -110,5 +119,11 @@ namespace EmailClient.Gui
             emailCollectionViewSource.View.Refresh();
             await pop3client.Disconnect();
         }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await RefreshMailbox();
+        }
+
     }
 }
