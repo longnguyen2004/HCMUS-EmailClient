@@ -21,7 +21,9 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="2">
-            <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top"/>
+            <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
+                <MenuItem Header="Đăng xuất" Click="LogoutThenLogin"/>
+            </MenuItem>
         </Menu>
         <ListBox ItemsSource="{Binding Source={StaticResource emailCollectionViewSource}}" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.Resources>

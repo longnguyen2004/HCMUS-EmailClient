@@ -23,7 +23,7 @@ namespace EmailClient.Gui
     /// </summary>
     public partial class MainWindow : Window
     {
-        private EmailContext _context;
+        private EmailContext? _context;
         private CollectionViewSource emailCollectionViewSource;
         public MainWindow()
         {
@@ -54,21 +54,28 @@ namespace EmailClient.Gui
         }
         private async Task Logout()
         {
-            await Task.Run(() => {
+            emailCollectionViewSource.Source = null;
+            if (_context == null)
+                throw new ApplicationException("_context is null here, which it shouldn't be");
+            await Task.Run(() =>
+            {
                 _context.SaveChanges();
                 _context.Dispose();
             });
-            emailCollectionViewSource.Source = null;
         }
-
+        private async void LogoutThenLogin(object sender, RoutedEventArgs e)
+        {
+            await Logout();
+            await Login();
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Login();
+            _ = Login();
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
-            Logout();
+            _ = Logout();
         }
     }
 }
