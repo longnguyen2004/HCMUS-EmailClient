@@ -37,6 +37,7 @@ namespace EmailClient.Gui
             if (ok != true)
             {
                 Close();
+                return;
             }
             var app = (App)Application.Current;
             app.GlobalConfig.General = login.LocalLogin;
