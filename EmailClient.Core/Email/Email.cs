@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Net.NetworkInformation;
-using System.Text;
 using System.Text.RegularExpressions;
 using MCollections;
 
@@ -8,7 +7,7 @@ namespace EmailClient;
 
 public partial class Email
 {
-    public partial class EmailAddress: IComparable<EmailAddress>
+    public partial class EmailAddress : IComparable<EmailAddress>
     {
         [GeneratedRegex(
             """(?<local_part>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?<domain>(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"""
@@ -66,9 +65,63 @@ public partial class Email
     public IndexedSet<EmailAddress> Bcc { get; set; } = new();
     public DateTime? Date { get; set; }
     public string? Subject { get; set; }
-    public string? Body { get; set; }
-    public string? HtmlBody { get; set; }
-    public List<IAttachment> Attachments { get; } = new();
+    private MimeEntity? _body;
+    public MimeEntity? Body
+    {
+        get => _body;
+        set
+        {
+            TextBody = null;
+            HtmlBody = null;
+            _body = value;
+            if (value == null)
+                return;
+
+            // Regular email without multipart
+            if (Body is MimePart mimePart)
+            {
+                TextBody = mimePart.Body;
+            }
+            else if (Body is MimeMultipart mimeMultipart)
+            {
+                var firstPart = mimeMultipart.Parts[0];
+                if (firstPart is MimePart body && body.ContentType == "text/plain")
+                {
+                    TextBody = body.Body;
+                }
+                else if (firstPart is MimeMultipart alternative)
+                {
+                    foreach (var altPart in alternative.Parts.Where(part => part is MimePart).Cast<MimePart>())
+                    {
+                        if (altPart.ContentType == "text/plain")
+                            TextBody ??= altPart.Body;
+                        else if (altPart.ContentType == "text/html")
+                            HtmlBody ??= altPart.Body;
+                    }
+                }
+                var attachments = new List<IAttachment>();
+                foreach (var part in mimeMultipart.Parts)
+                {
+                    if (!part.Headers.TryGetValue("Content-Disposition", out var contentDisposition))
+                        continue;
+                    if (contentDisposition.Value == "attachment")
+                    {
+                        attachments.Add(
+                            new AttachmentRemote(
+                                part.Body,
+                                contentDisposition.ExtraValues["filename"],
+                                part.ContentType
+                            )
+                        );
+                    }
+                }
+                Attachments = attachments;
+            }
+        }
+    }
+    public string? TextBody { get; private set; }
+    public string? HtmlBody { get; private set; }
+    public IEnumerable<IAttachment> Attachments { get; private set; } = Array.Empty<IAttachment>();
     public Email() { }
     public Email(MimeEntity mime)
     {
@@ -85,45 +138,7 @@ public partial class Email
         if (mime.Headers.TryGetValue("Subject", out var subject))
             Subject = subject.Value;
         MessageId = mime.Headers["Message-ID"].Value[1..^1];
-
-        // Regular email without multipart
-        if (mime is MimePart mimePart)
-        {
-            Body = mimePart.Body;
-        }
-        else if (mime is MimeMultipart mimeMultipart)
-        {
-            var firstPart = mimeMultipart.Parts[0];
-            if (firstPart is MimePart body && body.ContentType == "text/plain")
-            {
-                Body = body.Body;
-            }
-            else if (firstPart is MimeMultipart alternative)
-            {
-                foreach (var altPart in alternative.Parts.Where(part => part is MimePart).Cast<MimePart>())
-                {
-                    if (altPart.ContentType == "text/plain")
-                        Body ??= altPart.Body;
-                    else if (altPart.ContentType == "text/html")
-                        HtmlBody ??= altPart.Body;
-                }
-            }
-            foreach (var part in mimeMultipart.Parts)
-            {
-                if (!part.Headers.TryGetValue("Content-Disposition", out var contentDisposition))
-                    continue;
-                if (contentDisposition.Value == "attachment")
-                {
-                    Attachments.Add(
-                        new AttachmentRemote(
-                            part.Body,
-                            contentDisposition.ExtraValues["filename"],
-                            part.ContentType
-                        )
-                    );
-                }
-            }
-        }
+        Body = mime;
     }
     public IEnumerable<EmailAddress> GetRecipients()
     {
@@ -134,57 +149,11 @@ public partial class Email
         foreach (var email in Bcc)
             yield return email;
     }
-    public MimeEntity ToMime()
+    public MimeEntity? ToMime()
     {
-        static MimePart createBodyMime(string body, string contentType)
-        {
-            Dictionary<string, MimeHeaderValue> header = new()
-            {
-                {
-                    "Content-Type",
-                    new(contentType, new(){
-                        {"charset", "UTF-8"}
-                    })
-                }
-            };
-            var utf8Bytes = Encoding.UTF8.GetBytes(body);
-            // Not pure ASCII, need encoding
-            if (utf8Bytes.Length != body.Length)
-            {
-                body = Convert.ToBase64String(utf8Bytes);
-                header["Content-Transfer-Encoding"] = new("base64");
-            }
-            return new MimePart(header, body);
-
-        }
-        MimeEntity message;
-        var textPart = createBodyMime(Body ?? "", "text/plain");
-        if (HtmlBody != null)
-        {
-            var htmlPart = createBodyMime(HtmlBody, "text/html");
-            message = new MimeMultipart(
-                new(),
-                new(){ textPart, htmlPart },
-                "",
-                "alternative"
-            );
-        }
-        else
-        {
-            message = textPart;
-        }
-        if (Attachments.Count > 0)
-        {
-            var withAttachments = new MimeMultipart(
-                new(),
-                new(){ message },
-                "This is a multi-part message in MIME format."
-            );
-            foreach (var attachment in Attachments)
-                withAttachments.Parts.Add(new MimeAttachment(attachment));
-            message = withAttachments;
-        }
-        message.Headers["MIME-Version"] = new("1.0");
+        var message = Body;
+        if (message == null)
+            return null;
         if (From != null)
             message.Headers["From"] = new(From.ToStringPunycode());
         if (To.Count > 0)
