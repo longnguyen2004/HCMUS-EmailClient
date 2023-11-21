@@ -65,14 +65,36 @@ public partial class Email
     public IndexedSet<EmailAddress> Bcc { get; set; } = new();
     public DateTime? Date { get; set; }
     public string? Subject { get; set; }
+    public string? TextBody { get {
+        if (_textBodyDecoded == null)
+        {
+            if (_textBodyPart == null)
+                return null;
+            _textBodyDecoded = BodyDecoder.Decode(_textBodyPart);
+        }
+        return _textBodyDecoded;
+    } }
+    private MimePart? _textBodyPart;
+    private string? _textBodyDecoded;
+    public string? HtmlBody { get {
+        if (_htmlBodyDecoded == null)
+        {
+            if (_htmlBodyPart == null)
+                return null;
+            _htmlBodyDecoded = BodyDecoder.Decode(_htmlBodyPart);
+        }
+        return _htmlBodyDecoded;
+    } }
+    private MimePart? _htmlBodyPart;
+    private string? _htmlBodyDecoded;
     private MimeEntity? _body;
     public MimeEntity? Body
     {
         get => _body;
         set
         {
-            TextBody = null;
-            HtmlBody = null;
+            _textBodyPart = null;
+            _htmlBodyPart = null;
             _body = value;
             if (value == null)
                 return;
@@ -80,47 +102,35 @@ public partial class Email
             // Regular email without multipart
             if (Body is MimePart mimePart)
             {
-                TextBody = mimePart.Body;
+                _textBodyPart = mimePart;
             }
             else if (Body is MimeMultipart mimeMultipart)
             {
                 var firstPart = mimeMultipart.Parts[0];
                 if (firstPart is MimePart body && body.ContentType == "text/plain")
                 {
-                    TextBody = body.Body;
+                    _textBodyPart = body;
                 }
                 else if (firstPart is MimeMultipart alternative)
                 {
                     foreach (var altPart in alternative.Parts.Where(part => part is MimePart).Cast<MimePart>())
                     {
                         if (altPart.ContentType == "text/plain")
-                            TextBody ??= altPart.Body;
+                            _textBodyPart ??= altPart;
                         else if (altPart.ContentType == "text/html")
-                            HtmlBody ??= altPart.Body;
+                            _htmlBodyPart ??= altPart;
                     }
                 }
                 var attachments = new List<IAttachment>();
                 foreach (var part in mimeMultipart.Parts)
                 {
-                    if (!part.Headers.TryGetValue("Content-Disposition", out var contentDisposition))
-                        continue;
-                    if (contentDisposition.Value == "attachment")
-                    {
-                        attachments.Add(
-                            new AttachmentRemote(
-                                part.Body,
-                                contentDisposition.ExtraValues["filename"],
-                                part.ContentType
-                            )
-                        );
-                    }
+                    if (part is MimeAttachment attachPart)
+                        attachments.Add(attachPart.Attachment);
                 }
                 Attachments = attachments;
             }
         }
     }
-    public string? TextBody { get; private set; }
-    public string? HtmlBody { get; private set; }
     public IEnumerable<IAttachment> Attachments { get; private set; } = Array.Empty<IAttachment>();
     public Email() { }
     public Email(MimeEntity mime)
