@@ -66,6 +66,7 @@ namespace EmailClient.Gui
                 _context.SaveChanges();
                 _context.Dispose();
             }).ConfigureAwait(false);
+            _context = null;
         }
         private async void LogoutThenLogin(object sender, RoutedEventArgs e)
         {
