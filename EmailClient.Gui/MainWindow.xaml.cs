@@ -137,7 +137,7 @@ namespace EmailClient.Gui
         {
             TabItem tab = new()
             {
-                Content = new EmailWriter()
+                Content = new EmailComposer()
             };
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;

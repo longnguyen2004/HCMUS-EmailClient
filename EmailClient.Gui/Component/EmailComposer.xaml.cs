@@ -18,9 +18,9 @@ namespace EmailClient.Gui.Component
     /// <summary>
     /// Interaction logic for EmailWriter.xaml
     /// </summary>
-    public partial class EmailWriter : UserControl
+    public partial class EmailComposer : UserControl
     {
-        public EmailWriter()
+        public EmailComposer()
         {
             InitializeComponent();
         }
