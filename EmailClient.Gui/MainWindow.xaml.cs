@@ -33,9 +33,7 @@ namespace EmailClient.Gui
             InitializeComponent();
         }
         private async Task Login()
-        {
-            AccountBar.Visibility = Visibility.Hidden;
-            EmailBox.Items.Clear();
+        {   
             var login = new Login();
             var ok = login.ShowDialog();
             if (ok != true)
@@ -63,6 +61,8 @@ namespace EmailClient.Gui
         }
         private async Task Logout()
         {
+            AccountBar.Visibility = Visibility.Hidden;
+            EmailBox.Items.Clear();
             DataContext = null;
             if (_context == null) return;
             await Task.Run(() =>
@@ -83,7 +83,6 @@ namespace EmailClient.Gui
             var app = (App)Application.Current;
             AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
             AccountBar.Visibility = Visibility.Visible;
-
         }
 
         private void Window_Closed(object sender, EventArgs e)
