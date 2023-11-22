@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,8 @@ namespace EmailClient.Gui
         }
         private async Task Login()
         {
+            AccountBar.Visibility = Visibility.Hidden;
+            EmailBox.Children.Clear();
             var login = new Login();
             var ok = login.ShowDialog();
             if (ok != true)
@@ -76,7 +79,11 @@ namespace EmailClient.Gui
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Login();
+            _ = Login();
+            var app = (App)Application.Current;
+            AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
+            AccountBar.Visibility = Visibility.Visible;
+
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -97,6 +104,7 @@ namespace EmailClient.Gui
             tab.SetBinding(TabItem.HeaderProperty, new Binding("Subject"));
             EmailBox.Items.Add(tab);
         }
+
 
         private async Task RefreshMailbox()
         {
@@ -121,6 +129,20 @@ namespace EmailClient.Gui
             }
             await Task.Run(() => _context.SaveChanges());
             await pop3client.Disconnect();
+        }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await RefreshMailbox();
+        }
+
+        private void ComposeNewMail(object sender, RoutedEventArgs e)
+        {
+            TabItem tab = new()
+            {
+                Content = new EmailWriter()
+            };
+            EmailBox.Items.Add(tab);
         }
     }
 }

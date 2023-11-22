@@ -10,19 +10,21 @@
         Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" MinHeight="18"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="2">
             <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
                 <MenuItem Header="Đăng xuất" Click="LogoutThenLogin"/>
+                <MenuItem Header="Làm mới" Click="RefreshButton_Click"/>
             </MenuItem>
         </Menu>
-        <ListBox ItemsSource="{Binding Emails}" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <Button Content="Soạn mail" BorderThickness="1.5" Click="ComposeNewMail" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
+        <ListBox ItemsSource="{Binding Emails}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                 <Style TargetType="{x:Type ListBoxItem}">
@@ -45,8 +47,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <TextBlock Grid.Column="1" Width="Auto" Height="18" Margin="366,0,0,0" Name="AccountBar" FontWeight="Bold" HorizontalAlignment="Right" Background ="Transparent" />
         <TabControl x:Name="EmailBox" Grid.Column="1" Grid.Row="1"/>
     </Grid>
+
 
 
 </Window>
