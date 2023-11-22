@@ -14,7 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using EmailClient.Database;
+using EmailClient.Gui.Component;
 using EmailClient.Gui.Dialog;
+using EmailClient.Gui.ViewModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmailClient.Gui
@@ -25,13 +27,10 @@ namespace EmailClient.Gui
     public partial class MainWindow : Window
     {
         private EmailContext? _context;
-        private CollectionViewSource emailCollectionViewSource;
-
-
+        private EmailListViewModel _vm;
         public MainWindow()
         {
             InitializeComponent();
-            emailCollectionViewSource = (CollectionViewSource)FindResource(nameof(emailCollectionViewSource));
             AccountBar.Visibility = Visibility.Hidden;
         }
         private async Task Login()
@@ -49,24 +48,28 @@ namespace EmailClient.Gui
 
             var messagePath = Path.Join(app.RootDir, "messages");
             Directory.CreateDirectory(messagePath);
+
             _context = new(Path.Join(messagePath, $"{app.GlobalConfig.General.Email}.db"));
+            _vm = new(_context);
+            DataContext = _vm;
 
             await Task.Run(() => {
                 _context.Database.Migrate();
                 _context.Emails.Load();
             });
-            emailCollectionViewSource.Source = _context.Emails.Local.ToObservableCollection();
+
+            await _vm.FetchMessages();
         }
         private async Task Logout()
         {
-            emailCollectionViewSource.Source = null;
-            if (_context == null)
-                throw new ApplicationException("_context is null here, which it shouldn't be");
+            DataContext = null;
+            if (_context == null) return;
             await Task.Run(() =>
             {
                 _context.SaveChanges();
                 _context.Dispose();
-            });
+            }).ConfigureAwait(false);
+            _context = null;
         }
         private async void LogoutThenLogin(object sender, RoutedEventArgs e)
         {
@@ -81,22 +84,20 @@ namespace EmailClient.Gui
             AccountBar.Visibility = Visibility.Visible;
         }
 
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
-            _ = Logout();
+            Logout().Wait();
         }
-
         private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var listBoxItem = sender as ListBoxItem;
-
-            if (listBoxItem?.DataContext is EmailEntry selectedEmail)
+            var emailEntry = (EmailEntryViewModel)listBoxItem!.DataContext;
+            emailEntry.IsRead = true;
+            EmailBox.Children.Clear();
+            EmailBox.Children.Add(new EmailViewer()
             {
-                selectedEmail.IsRead = true;
-                _context.SaveChanges();
-                SubjectBar.Text = selectedEmail.Email.Subject;
-                emailCollectionViewSource.View.Refresh();
-            }
+                DataContext = emailEntry.Email
+            });
         }
 
 
@@ -111,10 +112,8 @@ namespace EmailClient.Gui
             foreach (var uid in mailList)
             {
                 ++i;
-                if (_context.Emails.Any(e => e.Id == uid)) continue;
-                MemoryStream stream = new();
-                await stream.WriteAsync(await pop3client.GetMessage(i)!);
-                stream.Seek(0, SeekOrigin.Begin);
+                if (_context.Emails.Find(new[]{ uid }) != null) continue;
+                MemoryStream stream = new(await pop3client.GetMessage(i));
                 EmailEntry emailEntry = new()
                 {
                     Id = uid,
@@ -123,8 +122,7 @@ namespace EmailClient.Gui
                 };
                 _context.Emails.Add(emailEntry);
             }
-            await _context.SaveChangesAsync();
-            emailCollectionViewSource.View.Refresh();
+            await Task.Run(() => _context.SaveChanges());
             await pop3client.Disconnect();
         }
 

@@ -7,10 +7,7 @@
         xmlns:component="clr-namespace:EmailClient.Gui.Component"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
-        Loaded="Window_Loaded" Unloaded="Window_Unloaded">
-    <Window.Resources>
-        <CollectionViewSource x:Key="emailCollectionViewSource"/>
-    </Window.Resources>
+        Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="18"/>
@@ -27,18 +24,8 @@
             </MenuItem>
         </Menu>
         <Button Content="Soạn mail" BorderThickness="1.5" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
-        <TextBlock
-                   TextWrapping="Wrap"
-                   Margin="10,5,0,0"
-                   FontSize="20"
-                   Grid.Row="1"
-                   Grid.Column="2"
-                   HorizontalAlignment="Stretch"
-                   TextAlignment="Left"
-                   FontWeight="Bold"
-                   Name="SubjectBar"
-                   TextOptions.TextFormattingMode="Display"/>
         <ListBox ItemsSource="{Binding Source={StaticResource emailCollectionViewSource}}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0">
+        <ListBox ItemsSource="{Binding Emails}" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                 <Style TargetType="{x:Type ListBoxItem}">
@@ -68,7 +55,7 @@
                 Name="AccountBar" 
                 FontWeight="Bold" 
                 HorizontalAlignment="Right" Background ="Transparent" />
-
+        <DockPanel x:Name="EmailBox" Grid.Column="1" Grid.Row="1"/>
     </Grid>
 
 
