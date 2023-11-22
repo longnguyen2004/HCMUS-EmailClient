@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using EmailClient.Database;
+using EmailClient.Gui.Component;
 using EmailClient.Gui.Dialog;
 using EmailClient.Gui.ViewModel;
 using Microsoft.EntityFrameworkCore;
@@ -82,11 +83,17 @@ namespace EmailClient.Gui
         {
             Logout().Wait();
         }
-
         private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var listBoxItem = sender as ListBoxItem;
-            ((EmailEntryViewModel)listBoxItem!.DataContext).IsRead = true;
+            var emailEntry = (EmailEntryViewModel)listBoxItem!.DataContext;
+            emailEntry.IsRead = true;
+
+            EmailBox.Children.Clear();
+            EmailBox.Children.Add(new EmailViewer()
+            {
+                DataContext = emailEntry.Email
+            });
         }
 
         private async Task RefreshMailbox()
