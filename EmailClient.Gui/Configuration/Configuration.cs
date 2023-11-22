@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -24,6 +25,18 @@ public partial class Configuration: ObservableObject
             return MemberwiseClone();
         }
     }
+    public enum FilterType {
+        From,
+        Subject,
+        Content,
+        Spam
+    }
+    public class Filter {
+        public FilterType Type { get; set; } = FilterType.From;
+        public string Keyword { get; set; } = string.Empty;
+        public string Folder { get; set; } = "Folder";
+    }
     [ObservableProperty]
     private Login general = new();
+    public ICollection<Filter> Filters { get; } = new List<Filter>();
 }
