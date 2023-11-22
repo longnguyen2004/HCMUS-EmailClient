@@ -8,14 +8,20 @@ namespace EmailClient.Database;
 public class EmailEntry
 {
     public string Id { get; set; }
-    public string Filter { get; set; }
     public bool IsRead { get; set; }
     public Email Email { get; set; }
+    public List<Filter> Filters { get; } = new();
+}
+
+public class Filter {
+    public string Name { get; set; }
+    public List<EmailEntry> Emails { get; } = new();
 }
 
 public partial class EmailContext: DbContext
 {
     public DbSet<EmailEntry> Emails { get; set; }
+    public DbSet<Filter> Filters { get; set; }
     public string DbPath { get; }
     public EmailContext(string dbPath)
     {
@@ -24,7 +30,6 @@ public partial class EmailContext: DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite($"Data Source={DbPath}");
-        optionsBuilder.UseLazyLoadingProxies();
     }
 }
 
