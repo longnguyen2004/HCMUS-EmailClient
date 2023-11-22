@@ -29,12 +29,15 @@ namespace EmailClient.Gui.Component
         {
             CcLabel.Visibility = Visibility.Visible;
             CcTextBox.Visibility = Visibility.Visible;
+            CcButton.Visibility = Visibility.Hidden;
+
         }
 
         private void BccButton_Click(object sender, RoutedEventArgs e)
         {
             BccLabel.Visibility = Visibility.Visible;
             BccTextBox.Visibility = Visibility.Visible;
+            BccButton.Visibility = Visibility.Hidden;
         }
     }
 }
