@@ -36,7 +36,7 @@ public partial class Configuration: ObservableObject
     }
     public class Filter {
         public FilterType Type { get; set; } = FilterType.From;
-        public string Keyword { get; set; } = string.Empty;
+        public List<string> Keywords { get; set; } = new();
         public string Folder { get; set; } = "Folder";
     }
     [ObservableProperty]
