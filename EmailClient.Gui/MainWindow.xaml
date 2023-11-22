@@ -24,8 +24,7 @@
             </MenuItem>
         </Menu>
         <Button Content="Soạn mail" BorderThickness="1.5" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
-        <ListBox ItemsSource="{Binding Source={StaticResource emailCollectionViewSource}}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0">
-        <ListBox ItemsSource="{Binding Emails}" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox ItemsSource="{Binding Emails}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                 <Style TargetType="{x:Type ListBoxItem}">
@@ -48,13 +47,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock Grid.Column="1" 
-                Width="Auto" 
-                Height="18" 
-                Margin="366,0,0,0" 
-                Name="AccountBar" 
-                FontWeight="Bold" 
-                HorizontalAlignment="Right" Background ="Transparent" />
+        <TextBlock Grid.Column="1" Width="Auto" Height="18" Margin="366,0,0,0" Name="AccountBar" FontWeight="Bold" HorizontalAlignment="Right" Background ="Transparent" />
         <DockPanel x:Name="EmailBox" Grid.Column="1" Grid.Row="1"/>
     </Grid>
 

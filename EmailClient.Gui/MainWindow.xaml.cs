@@ -31,10 +31,11 @@ namespace EmailClient.Gui
         public MainWindow()
         {
             InitializeComponent();
-            AccountBar.Visibility = Visibility.Hidden;
         }
         private async Task Login()
         {
+            AccountBar.Visibility = Visibility.Hidden;
+            EmailBox.Visibility = Visibility.Hidden;
             var login = new Login();
             var ok = login.ShowDialog();
             if (ok != true)
@@ -82,6 +83,8 @@ namespace EmailClient.Gui
             var app = (App)Application.Current;
             AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
             AccountBar.Visibility = Visibility.Visible;
+            EmailBox.Visibility = Visibility.Visible;
+
         }
 
         private void Window_Closed(object sender, EventArgs e)

@@ -22,7 +22,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBlock Margin="10" Grid.ColumnSpan="2" Text="abcdef" FontWeight="Bold" FontSize="25"/>
+        <TextBlock Margin="10" Grid.ColumnSpan="2" Text="{Binding Subject, Mode=OneWay}" FontWeight="Bold" FontSize="25"/>
         <Label Grid.Row="1" Grid.Column="0">From</Label>
         <Label Grid.Row="2" Grid.Column="0">To</Label>
         <Label Grid.Row="3" Grid.Column="0">Cc</Label>
