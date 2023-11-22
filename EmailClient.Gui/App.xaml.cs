@@ -33,7 +33,7 @@ namespace EmailClient.Gui
 
             try
             {
-                GlobalConfig = JsonSerializer.Deserialize<Configuration>(_configFile)!;
+                GlobalConfig = Configuration.Load(_configFile)!;
             }
             catch (JsonException)
             {
@@ -44,8 +44,7 @@ namespace EmailClient.Gui
         public async Task SaveConfig()
         {
             _configFile.SetLength(0);
-            await JsonSerializer.SerializeAsync(_configFile, GlobalConfig);
-            await _configFile.FlushAsync();
+            await Configuration.SaveAsync(_configFile, GlobalConfig);
         }
     }
 }

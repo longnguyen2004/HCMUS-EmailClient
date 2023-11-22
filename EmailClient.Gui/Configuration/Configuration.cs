@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EmailClient.Gui;
@@ -39,4 +42,26 @@ public partial class Configuration: ObservableObject
     [ObservableProperty]
     private Login general = new();
     public ICollection<Filter> Filters { get; } = new List<Filter>();
+
+    private static JsonSerializerOptions serializerOptions = new() {
+        Converters = { new JsonStringEnumConverter() }
+    };
+    public static Configuration? Load(Stream stream)
+    {
+        return JsonSerializer.Deserialize<Configuration>(stream, serializerOptions);
+    }
+    public static ValueTask<Configuration?> LoadAsync(Stream stream)
+    {
+        return JsonSerializer.DeserializeAsync<Configuration>(stream, serializerOptions);
+    }
+    public static void Save(Stream stream, Configuration config)
+    {
+        JsonSerializer.Serialize(stream, config, serializerOptions);
+        stream.Flush();
+    }
+    public static async Task SaveAsync(Stream stream, Configuration config)
+    {
+        await JsonSerializer.SerializeAsync(stream, config, serializerOptions);
+        await stream.FlushAsync();
+    }
 }
