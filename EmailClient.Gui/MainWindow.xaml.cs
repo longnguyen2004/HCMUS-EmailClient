@@ -56,6 +56,11 @@ namespace EmailClient.Gui
             await Task.Run(() => {
                 _context.Database.Migrate();
                 _context.Emails.Load();
+                _context.Filters.Load();
+                _context.Filters.UpdateRange(
+                    app.GlobalConfig.Filters.Select(filter => new Filter(){ Name = filter.Folder })
+                );
+                _context.SaveChanges();
             });
 
             await _vm.FetchMessages();
