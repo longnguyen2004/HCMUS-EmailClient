@@ -25,10 +25,9 @@
         <TextBox Grid.Row="0" Grid.Column="1" x:Name="ToTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
 
         <!-- Buttons -->
-        <UniformGrid Grid.Row="0" Grid.Column="2" Rows="1" Columns="3" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <Border Visibility="Hidden"/>
-            <Button x:Name="CcButton" Content="Cc" Click="CcButton_Click" Margin="5,5,0,0"/>
-            <Button x:Name="BccButton" Content="Bcc" Click="BccButton_Click" Margin="0,5,5,0"/>
+        <UniformGrid Name="ExtendGrid" Grid.Row="0" Grid.Column="2" Rows="1" Columns="2" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,3,0" >
+            <Button x:Name="CcButton" Width="25" Grid.Column="1" Content="Cc" Click="CcButton_Click" Margin="5,5,0,0"/>
+            <Button x:Name="BccButton"  Width ="25" Grid.Column="2" Content="Bcc" Click="BccButton_Click" Margin="0,5,5,0"/>
         </UniformGrid>
 
 

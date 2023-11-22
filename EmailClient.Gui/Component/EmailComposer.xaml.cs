@@ -37,7 +37,8 @@ namespace EmailClient.Gui.Component
         {
             BccLabel.Visibility = Visibility.Visible;
             BccTextBox.Visibility = Visibility.Visible;
-            BccButton.Visibility = Visibility.Hidden;
+            BccButton.Visibility = Visibility.Collapsed;
+            ExtendGrid.Margin = new Thickness(0, 0, -22, 0);
         }
     }
 }
