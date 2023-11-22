@@ -60,13 +60,12 @@ namespace EmailClient.Gui
         private async Task Logout()
         {
             DataContext = null;
-            if (_context == null)
-                throw new ApplicationException("_context is null here, which it shouldn't be");
+            if (_context == null) return;
             await Task.Run(() =>
             {
                 _context.SaveChanges();
                 _context.Dispose();
-            });
+            }).ConfigureAwait(false);
         }
         private async void LogoutThenLogin(object sender, RoutedEventArgs e)
         {
@@ -75,12 +74,12 @@ namespace EmailClient.Gui
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _ = Login();
+            Login();
         }
 
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
-            _ = Logout();
+            Logout().Wait();
         }
 
         private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
