@@ -35,7 +35,7 @@ namespace EmailClient.Gui
         private async Task Login()
         {
             AccountBar.Visibility = Visibility.Hidden;
-            EmailBox.Children.Clear();
+            EmailBox.Items.Clear();
             var login = new Login();
             var ok = login.ShowDialog();
             if (ok != true)
