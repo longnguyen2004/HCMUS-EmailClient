@@ -44,6 +44,7 @@ namespace EmailClient.Gui
             var app = (App)Application.Current;
             app.GlobalConfig.General = login.LocalLogin;
             _ = app.SaveConfig();
+            AccountBar.Header = app.GlobalConfig.General.Email;
 
             var messagePath = Path.Join(app.RootDir, "messages");
             Directory.CreateDirectory(messagePath);
@@ -61,7 +62,7 @@ namespace EmailClient.Gui
         }
         private async Task Logout()
         {
-            AccountBar.Visibility = Visibility.Hidden;
+            AccountBar.Header = "";
             EmailBox.Items.Clear();
             DataContext = null;
             if (_context == null) return;
@@ -80,9 +81,6 @@ namespace EmailClient.Gui
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _ = Login();
-            var app = (App)Application.Current;
-            AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
-            AccountBar.Visibility = Visibility.Visible;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -103,7 +101,6 @@ namespace EmailClient.Gui
             tab.SetBinding(TabItem.HeaderProperty, new Binding("Subject"));
             EmailBox.Items.Add(tab);
         }
-
 
         private async Task RefreshMailbox()
         {
