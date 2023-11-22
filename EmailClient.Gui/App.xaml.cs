@@ -20,7 +20,7 @@ namespace EmailClient.Gui
         private FileStream _configFile;
         protected override void OnStartup(StartupEventArgs e)
         {
-            var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var exePath = Environment.ProcessPath;
             RootDir = Path.GetDirectoryName(exePath)!;
 
             var jsonPath = Path.Join(RootDir, "config", "config.json");
@@ -37,8 +37,8 @@ namespace EmailClient.Gui
             }
             catch (JsonException)
             {
-                _configFile.Seek(0, SeekOrigin.Begin);
                 GlobalConfig = new();
+                _ = SaveConfig();
             }
         }
         public async Task SaveConfig()
