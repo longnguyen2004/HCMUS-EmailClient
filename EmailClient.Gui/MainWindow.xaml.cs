@@ -89,11 +89,13 @@ namespace EmailClient.Gui
             var emailEntry = (EmailEntryViewModel)listBoxItem!.DataContext;
             emailEntry.IsRead = true;
 
-            EmailBox.Children.Clear();
-            EmailBox.Children.Add(new EmailViewer()
+            TabItem tab = new()
             {
+                Content = new EmailViewer(),
                 DataContext = emailEntry.Email
-            });
+            };
+            tab.SetBinding(TabItem.HeaderProperty, new Binding("Subject"));
+            EmailBox.Items.Add(tab);
         }
 
         private async Task RefreshMailbox()

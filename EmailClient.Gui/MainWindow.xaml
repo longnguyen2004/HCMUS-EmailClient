@@ -45,7 +45,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <DockPanel x:Name="EmailBox" Grid.Column="1" Grid.Row="1"/>
+        <TabControl x:Name="EmailBox" Grid.Column="1" Grid.Row="1"/>
     </Grid>
 
 
