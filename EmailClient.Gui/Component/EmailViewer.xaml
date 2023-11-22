@@ -10,19 +10,20 @@
     <UserControl.Resources>
         <conv:EmailListConverter x:Key="emailListConverter" />
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBlock Margin="10" Grid.ColumnSpan="2" Text="{Binding Subject}" FontWeight="Bold" FontSize="25"/>
+        <TextBlock Margin="0,0,0,5" Grid.ColumnSpan="2" Text="{Binding Subject}" FontWeight="Bold" FontSize="25"/>
+
         <Label Grid.Row="1" Grid.Column="0">From</Label>
         <Label Grid.Row="2" Grid.Column="0">To</Label>
         <Label Grid.Row="3" Grid.Column="0">Cc</Label>
@@ -31,6 +32,6 @@
         <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding To, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="2" Grid.Column="1"/>
         <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="3" Grid.Column="1"/>
 
-        <TextBox IsReadOnly="True" Text="{Binding TextBody, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="2"></TextBox>
+        <TextBox Margin="0,5,0,0" IsReadOnly="True" Text="{Binding TextBody, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="2"></TextBox>
     </Grid>
 </UserControl>
