@@ -100,6 +100,7 @@ namespace EmailClient.Gui
             };
             tab.SetBinding(TabItem.HeaderProperty, new Binding("Subject"));
             EmailBox.Items.Add(tab);
+            EmailBox.SelectedItem = tab;
         }
 
         private async Task RefreshMailbox()
@@ -139,6 +140,7 @@ namespace EmailClient.Gui
                 Content = new EmailWriter()
             };
             EmailBox.Items.Add(tab);
+            EmailBox.SelectedItem = tab;
         }
     }
 }
