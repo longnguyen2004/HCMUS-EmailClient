@@ -10,12 +10,14 @@ public class EmailEntry
     public string Id { get; set; }
     public bool IsRead { get; set; }
     public Email Email { get; set; }
-    public List<Filter> Filters { get; } = new();
+    public SortedSet<Filter> Filters { get; } = new(
+        Comparer<Filter>.Create((a, b) => a.Name.CompareTo(b.Name))
+    );
 }
 
 public class Filter {
     public string Name { get; set; }
-    public List<EmailEntry> Emails { get; } = new();
+    public IEnumerable<EmailEntry> Emails { get; }
 }
 
 public partial class EmailContext: DbContext
