@@ -35,7 +35,7 @@ namespace EmailClient.Gui
         private async Task Login()
         {
             AccountBar.Visibility = Visibility.Hidden;
-            EmailBox.Visibility = Visibility.Hidden;
+            EmailBox.Children.Clear();
             var login = new Login();
             var ok = login.ShowDialog();
             if (ok != true)
@@ -83,7 +83,6 @@ namespace EmailClient.Gui
             var app = (App)Application.Current;
             AccountBar.Text = $"  {app.GlobalConfig.General.Email}  ";
             AccountBar.Visibility = Visibility.Visible;
-            EmailBox.Visibility = Visibility.Visible;
 
         }
 
@@ -134,5 +133,10 @@ namespace EmailClient.Gui
             await RefreshMailbox();
         }
 
+        private void ComposeNewMail(object sender, RoutedEventArgs e)
+        {
+            EmailBox.Children.Clear();
+            EmailBox.Children.Add(new EmailWriter());
+        }
     }
 }

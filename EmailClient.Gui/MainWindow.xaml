@@ -23,7 +23,7 @@
                 <MenuItem Header="Làm mới" Click="RefreshButton_Click"/>
             </MenuItem>
         </Menu>
-        <Button Content="Soạn mail" BorderThickness="1.5" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
+        <Button Content="Soạn mail" BorderThickness="1.5" Click="ComposeNewMail" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
         <ListBox ItemsSource="{Binding Emails}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
