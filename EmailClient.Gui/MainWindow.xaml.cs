@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using EmailClient.Database;
 using EmailClient.Gui.Dialog;
+using EmailClient.Gui.ViewModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmailClient.Gui
@@ -24,11 +25,10 @@ namespace EmailClient.Gui
     public partial class MainWindow : Window
     {
         private EmailContext? _context;
-        private CollectionViewSource emailCollectionViewSource;
+        private EmailListViewModel _vm;
         public MainWindow()
         {
             InitializeComponent();
-            emailCollectionViewSource = (CollectionViewSource)FindResource(nameof(emailCollectionViewSource));
         }
         private async Task Login()
         {
@@ -45,17 +45,21 @@ namespace EmailClient.Gui
 
             var messagePath = Path.Join(app.RootDir, "messages");
             Directory.CreateDirectory(messagePath);
+
             _context = new(Path.Join(messagePath, $"{app.GlobalConfig.General.Email}.db"));
+            _vm = new(_context);
+            DataContext = _vm;
 
             await Task.Run(() => {
                 _context.Database.Migrate();
                 _context.Emails.Load();
             });
-            emailCollectionViewSource.Source = _context.Emails.Local.ToObservableCollection();
+
+            await _vm.FetchMessages();
         }
         private async Task Logout()
         {
-            emailCollectionViewSource.Source = null;
+            DataContext = null;
             if (_context == null)
                 throw new ApplicationException("_context is null here, which it shouldn't be");
             await Task.Run(() =>
@@ -82,13 +86,7 @@ namespace EmailClient.Gui
         private void ListBoxItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var listBoxItem = sender as ListBoxItem;
-
-            if (listBoxItem?.DataContext is EmailEntry selectedEmail)
-            {
-                selectedEmail.IsRead = true;
-                _context.SaveChanges();
-                emailCollectionViewSource.View.Refresh();
-            }
+            ((EmailEntryViewModel)listBoxItem!.DataContext).IsRead = true;
         }
 
         private async Task RefreshMailbox()
@@ -102,10 +100,8 @@ namespace EmailClient.Gui
             foreach (var uid in mailList)
             {
                 ++i;
-                if (_context.Emails.Any(e => e.Id == uid)) continue;
-                MemoryStream stream = new();
-                await stream.WriteAsync(await pop3client.GetMessage(i)!);
-                stream.Seek(0, SeekOrigin.Begin);
+                if (_context.Emails.Find(new[]{ uid }) != null) continue;
+                MemoryStream stream = new(await pop3client.GetMessage(i));
                 EmailEntry emailEntry = new()
                 {
                     Id = uid,
@@ -114,8 +110,7 @@ namespace EmailClient.Gui
                 };
                 _context.Emails.Add(emailEntry);
             }
-            await _context.SaveChangesAsync();
-            emailCollectionViewSource.View.Refresh();
+            await Task.Run(() => _context.SaveChanges());
             await pop3client.Disconnect();
         }
     }
