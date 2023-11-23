@@ -2,6 +2,7 @@
 using EmailClient.Gui.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,5 +57,19 @@ namespace EmailClient.Gui.Component
             dialog.ShowDialog();
             BccTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
+        private void AddAttachmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            Nullable<bool> result = dialog.ShowDialog();
+            if (result == true)
+                viewModel.Attachments.Add(new AttachmentLocal(new System.IO.FileInfo(dialog.FileName)));
+        }
+        private void RemoveAttachmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = AttachmentsListBox.SelectedItems.Cast<IAttachment>().ToList();
+            foreach (var selectedItem in selectedItems)
+                viewModel.Attachments.Remove(selectedItem);
+        }
+
     }
 }
