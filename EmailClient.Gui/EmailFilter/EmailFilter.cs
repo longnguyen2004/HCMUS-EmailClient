@@ -9,13 +9,17 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using System.Linq;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmailClient.Gui;
 
 public class EmailFilter
 {
     public static void ApplyFilters(
-        IList<EmailEntry> emails, IEnumerable<Configuration.Filter> filters
+        IList<EmailEntry> emails,
+        IEnumerable<Configuration.Filter> filters,
+        // Extremely ugly, but it gets the job done...
+        DbSet<Database.Filter> dbFilters
     )
     {
         var luceneVersion = LuceneVersion.LUCENE_48;
@@ -45,6 +49,8 @@ public class EmailFilter
                 var searcher = new IndexSearcher(reader);
                 foreach (var filter in filters)
                 {
+                    var dbFilter = dbFilters.Find(filter.Folder);
+                    if (dbFilter == null) continue;
                     Query query;
                     switch (filter.Type)
                     {
@@ -92,7 +98,8 @@ public class EmailFilter
                     {
                         var doc = searcher.Doc(match.Doc);
                         var index = (int)doc.GetField("index").GetInt32Value()!;
-                        emails[index].Filters.Add(new() { Name = filter.Folder });
+
+                        emails[index].Filters.Add(dbFilter);
                     }
                 }
             }
