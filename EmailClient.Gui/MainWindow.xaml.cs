@@ -119,7 +119,7 @@ namespace EmailClient.Gui
             foreach (var uid in mailList)
             {
                 ++i;
-                if (_context.Emails.Find(new[]{ uid }) != null) continue;
+                if (_context?.Emails.Find(new[]{ uid }) != null) continue;
                 MemoryStream stream = new(await pop3client.GetMessage(i));
                 EmailEntry emailEntry = new()
                 {
@@ -127,12 +127,11 @@ namespace EmailClient.Gui
                     IsRead = false,
                     Email = new Email((await MimeParser.Parse(stream))!)
                 };
-                _context.Emails.Add(emailEntry);
+                _context?.Emails.Add(emailEntry);
             }
-            await Task.Run(() => _context.SaveChanges());
+            await Task.Run(() => _context?.SaveChanges());
             await pop3client.Disconnect();
         }
-
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await RefreshMailbox();
