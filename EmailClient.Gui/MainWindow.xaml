@@ -1,0 +1,58 @@
+﻿<Window x:Class="EmailClient.Gui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmailClient.Gui"
+        xmlns:component="clr-namespace:EmailClient.Gui.Component"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Loaded="Window_Loaded" Closed="Window_Closed">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="18"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Menu VerticalAlignment="Top" Grid.ColumnSpan="2">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel HorizontalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
+            <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
+                <MenuItem Header="Đăng xuất" Click="LogoutThenLogin"/>
+                <MenuItem Header="Làm mới" Click="RefreshButton_Click"/>
+            </MenuItem>
+            <MenuItem HorizontalAlignment="Right" x:Name="AccountBar" FontWeight="Bold"/>
+        </Menu>
+        <Button Content="Soạn mail" BorderThickness="1.5" Click="ComposeNewMail" Background="Transparent" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="28" Width="Auto"/>
+        <ListBox ItemsSource="{Binding Emails}" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,28,0,0" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListBox.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsRead}" Value="true">
+                            <Setter Property="Background" Value="LightGray" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsRead}" Value="false">
+                            <Setter Property="Background" Value="White" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItem_PreviewMouseLeftButtonUp"/>
+                </Style>
+            </ListBox.Resources>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="5">
+                        <component:EmailListItem DataContext="{Binding Email}" />
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TabControl x:Name="EmailBox" Grid.Column="1" Grid.Row="1"/>
+    </Grid>
+</Window>

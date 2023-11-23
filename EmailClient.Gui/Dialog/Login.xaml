@@ -1,0 +1,75 @@
+﻿<Window x:Class="EmailClient.Gui.Dialog.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmailClient.Gui.Dialog"
+        mc:Ignorable="d"
+        Title="Login" Height="300" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1.5*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <DockPanel VerticalAlignment="Center" Margin="10,0,10,0" Grid.Row="0" Grid.ColumnSpan="2">
+            <Label>Email</Label>
+            <TextBox DockPanel.Dock="Right" Text="{Binding Email}"/>
+        </DockPanel>
+        <DockPanel VerticalAlignment="Center" Margin="10,0" Grid.Row="1" Grid.ColumnSpan="2">
+            <Label>Mật khẩu</Label>
+            <PasswordBox x:Name="passwordBox" DockPanel.Dock="Right"/>
+        </DockPanel>
+        <Grid Grid.Row="2" Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1.25*"/>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+                Cài đặt SMTP
+            </Label>
+            <Label Grid.Row="1" Grid.Column="0">Host</Label>
+            <Label Grid.Row="2" Grid.Column="0">Port</Label>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SmtpHost}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SmtpPort}"/>
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1.25*"/>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+                Cài đặt POP3
+            </Label>
+            <Label Grid.Row="1" Grid.Column="0">Host</Label>
+            <Label Grid.Row="2" Grid.Column="0">Port</Label>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Pop3Host}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Pop3Port}"/>
+        </Grid>
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="3,10"/>
+                    <Setter Property="Padding" Value="10,5"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Click="Save">OK</Button>
+            <Button Click="DontSave">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

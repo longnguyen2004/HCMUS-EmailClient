@@ -5,14 +5,13 @@ namespace EmailClient;
 
 public class MimeParserException : ApplicationException
 {
-    private readonly string _message;
     private readonly string? _line;
-    public MimeParserException(string message, string? line)
+    public MimeParserException(string message, string? line) :
+        base(message)
     {
-        _message = message;
         _line = line;
     }
-    public override string Message { get => $"{_message} (parsing line \"{_line}\")"; }
+    public override string Message { get => $"{base.Message} (parsing line \"{_line}\")"; }
 }
 
 public partial class MimeParser
@@ -21,27 +20,48 @@ public partial class MimeParser
     private static partial Regex HeaderRegex();
     [GeneratedRegex(@"(?<key>[A-Za-z-]+?)=(?<value>[^\s""]+?|"".+?"")(;|$)")]
     private static partial Regex HeaderExtraDataRegex();
-    private readonly StreamReader _reader;
     private enum MimeParserState
     {
         Headers,
         Body
     }
-    public MimeParser(StreamReader reader)
-    {
-        _reader = reader;
-    }
-    private async Task<(MimeEntity?, string?)> ParseImpl(StreamReader reader, HashSet<string?> endOfParse)
+    private static async Task<(MimeEntity?, string?)> ParseImpl(Stream stream, HashSet<string?> endOfParse)
     {
         var state = MimeParserState.Headers;
         MimeEntity? entity = null;
         Dictionary<string, MimeHeaderValue>? headers = null;
         StringBuilder bodyBuilder = new();
-        string? line;
+        var buffer = new byte[1024];
+        var len = 0;
 
         while (true)
         {
-            line = await reader.ReadLineAsync();
+            try
+            {
+                await stream.ReadExactlyAsync(buffer, len, 1);
+                if (buffer[len++] != 0x0a) continue;
+            }
+            catch (EndOfStreamException)
+            {
+            }
+
+            string? line = null;
+            if (len > 0)
+            {
+                if (state == MimeParserState.Headers)
+                {
+                    line = Encoding.ASCII.GetString(buffer, 0, len);
+                }
+                else
+                {
+                    if (headers!["Content-Type"].ExtraValues.TryGetValue("charset", out var charset))
+                        line = Encoding.GetEncoding(charset!).GetString(buffer, 0, len);
+                    else
+                        line = Encoding.ASCII.GetString(buffer, 0, len);
+                }
+                line = line.ReplaceLineEndings("");
+                len = 0;
+            }
             if (endOfParse.Contains(line))
             {
                 if (state == MimeParserState.Headers)
@@ -50,8 +70,27 @@ public partial class MimeParser
                     throw new MimeParserException("Unexpected end of parse line while parsing header", line);
                 }
                 // headers isn't null, and entity isn't created => assume not multipart
-                if (headers != null)
-                    entity ??= new MimePart(headers, bodyBuilder.ToString());
+                if (entity == null && headers != null)
+                {
+                    string body = bodyBuilder.ToString();
+                    if (
+                        headers.TryGetValue("Content-Disposition", out var disposition)
+                        && disposition.Value == "attachment"
+                    )
+                    {
+                        entity = new MimeAttachment(
+                            new AttachmentRemote(
+                                body.ReplaceLineEndings(""),
+                                disposition.ExtraValues["filename"],
+                                headers["Content-Type"].Value
+                            )
+                        );
+                    }
+                    else
+                    {
+                        entity = new MimePart(headers, body);
+                    }
+                }
                 return (entity, line);
             }
             if (line == null)
@@ -103,7 +142,7 @@ public partial class MimeParser
                             do
                             {
                                 (var part, lastLine) = await ParseImpl(
-                                    reader,
+                                    stream,
                                     new() {
                                         boundaryContinue,
                                         boundaryStop
@@ -114,24 +153,22 @@ public partial class MimeParser
                             }
                             while (lastLine != boundaryStop);
                             entity = new MimeMultipart(
-                                bodyBuilder.ToString(), headers, parts, boundary
+                                headers, parts, bodyBuilder.ToString(),
+                                contentType.Value.Replace("multipart/", ""), boundary
                             );
                         }
                         else
                         {
-                            if (contentType.Value.StartsWith("text"))
-                                bodyBuilder.AppendLine(line);
-                            else
-                                bodyBuilder.Append(line);
+                            bodyBuilder.AppendLine(line);
                         }
                         break;
                     }
             }
         }
     }
-    public async Task<MimeEntity?> Parse(string? endParseLine = null)
+    public static async Task<MimeEntity?> Parse(Stream stream, string? endParseLine = null)
     {
-        return (await ParseImpl(_reader, new() {
+        return (await ParseImpl(stream, new() {
             endParseLine
         })).Item1;
     }

@@ -3,12 +3,23 @@ using System.Text.RegularExpressions;
 
 namespace EmailClient;
 
+public class Pop3Exception : Exception
+{
+    private readonly string _message;
+    public Pop3Exception(string message)
+    {
+        _message = message;
+    }
+    public override string Message => _message;
+}
+
 public partial class Pop3Client
-{  
+{
     [GeneratedRegex("^(\\+OK|-ERR) ?(.*?)$")]
     private static partial Regex ResponseStatusRegex();
     private readonly TextCommandClient _client;
     public bool Connected => _client.Connected;
+    public Dictionary<string, string?> Capabilities { get; } = new();
     public Pop3Client(string host, ushort port)
     {
         _client = new(host, port);
@@ -17,21 +28,21 @@ public partial class Pop3Client
     private async Task<Pop3Response> SendCommand(Pop3Command command, string parameter = "")
     {
         if (parameter.Length == 0)
-            await _client.SendMessage(command.ToString());
+            await _client.SendMessage(Encoding.ASCII.GetBytes(command.ToString()));
         else
-            await _client.SendMessage($"{command} {parameter}");
+            await _client.SendMessage(Encoding.ASCII.GetBytes($"{command} {parameter}"));
         return await ParseResponse(command.Multiline);
     }
 
-    public class Pop3Response 
+    public class Pop3Response
     {
-        public bool Status { get; set; }
+        public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
         public List<string> AdditionalLines { get; } = new();
         public override string ToString()
         {
             StringBuilder builder = new();
-            builder.Append(Status ? "+OK" : "-ERR");
+            builder.Append(Success ? "+OK" : "-ERR");
             if (Message != string.Empty)
             {
                 builder.Append(' ');
@@ -55,7 +66,7 @@ public partial class Pop3Client
         public static Pop3Command PASS => new("PASS", false);
         public static Pop3Command STAT => new("STAT", false);
         public static Pop3Command LIST => new("LIST", true);
-        public static Pop3Command RETR => new("RETR", true);
+        public static Pop3Command RETR => new("RETR", false);
         public static Pop3Command DELE => new("DELE", false);
         public static Pop3Command NOOP => new("NOOP", false);
         public static Pop3Command RSET => new("RSET", false);
@@ -65,54 +76,108 @@ public partial class Pop3Client
     private async Task<Pop3Response> ParseResponse(bool multiline = false)
     {
         Pop3Response response = new();
-        string line = await _client.ReceiveMessage();
+        string line = Encoding.ASCII.GetString(
+            await _client.ReceiveMessage()
+        ).ReplaceLineEndings("");
+        Console.WriteLine(line);
         var match = ResponseStatusRegex().Match(line);
         if (!match.Success)
             throw new ApplicationException($"Expecting +OK or -ERR, got {line} (fix the parser!!!)");
-        response.Status = match.Groups[1].Value == "+OK";
+        response.Success = match.Groups[1].Value == "+OK";
         response.Message = match.Groups[2].Value;
 
         if (multiline)
         {
-            while (true)
-            {
-                line = await _client.ReceiveMessage();
-                if (line == ".") break;
-                if (line.StartsWith('.')) line = line[1..];
+            while ((
+                line = Encoding.ASCII.GetString(
+                    await _client.ReceiveMessage()
+                ).ReplaceLineEndings("")
+            ) != ".")
                 response.AdditionalLines.Add(line);
-            }
         }
         return response;
-
     }
 
     public async Task Connect()
     {
         await _client.Connect();
-        var serverInfo = await ParseResponse();
-        Console.Write(serverInfo);
-
-        var capa = await SendCommand(Pop3Command.CAPA, "");
-        Console.Write(capa);
-
-        var user = await SendCommand(Pop3Command.USER, "minhnhat@hcmus.edu.vn");
-        Console.Write(user);
-
-        var pass = await SendCommand(Pop3Command.PASS, "pass");
-        Console.Write(pass);
-
-        var stat = await SendCommand(Pop3Command.STAT, "");
-        Console.Write(stat);
-
-        var list = await SendCommand(Pop3Command.LIST, "");
-        Console.Write(list);
-
-        var uidl = await SendCommand(Pop3Command.UIDL, "");
-        Console.Write(uidl);
+        try
+        {
+            var serverInfo = await ParseResponse();
+            if (!serverInfo.Success)
+                throw new Pop3Exception(
+                    $"Error occurred while connecting to server: {serverInfo.Message}"
+                );
+            var capa = await SendCommand(Pop3Command.CAPA);
+            if (!capa.Success)
+                throw new Pop3Exception(
+                    $"Error occurred while getting server capabilities: {serverInfo.Message}"
+                );
+            foreach (var line in capa.AdditionalLines)
+            {
+                var split = line.Split(" ");
+                if (split.Length == 1)
+                    Capabilities[split[0]] = null;
+                else if (split.Length == 1)
+                    Capabilities[split[0]] = split[1];
+            }
+            if (!Capabilities.ContainsKey("UIDL"))
+                throw new Pop3Exception(
+                    $"Server doesn't support UIDL capability"
+                );
+        }
+        catch (Exception)
+        {
+            await Disconnect();
+            throw;
+        }
     }
+
+    public async Task Login(string user, string password)
+    {
+        var userResponse = await SendCommand(Pop3Command.USER, user);
+        if (!userResponse.Success)
+            throw new Pop3Exception($"Error while logging in: {userResponse.Message}");
+        var passResponse = await SendCommand(Pop3Command.PASS, password);
+        if (!passResponse.Success)
+            throw new Pop3Exception($"Error while logging in: {passResponse.Message}");
+    }
+
+    public async Task<List<string>> GetListing()
+    {
+        var response = await SendCommand(Pop3Command.UIDL);
+        if (!response.Success)
+            throw new Pop3Exception($"Failed to retrieve message list: {response.Message}");
+        List<string> uids = new();
+        foreach (var line in response.AdditionalLines)
+        {
+            var match = Regex.Match(line, "^(?<id>\\d+) (?<uid>.*)$");
+            uids.Add(match.Groups["uid"].Value);
+        }
+        return uids;
+    }
+
+    public async Task<byte[]> GetMessage(int id)
+    {
+        var response = await SendCommand(Pop3Command.RETR, id.ToString());
+        if (!response.Success)
+            throw new Pop3Exception($"Failed to get message with index {id}: {response.Message}");
+        MemoryStream stream = new();
+        while (true)
+        {
+            byte[] line = await _client.ReceiveMessage();
+            if (line.AsSpan().SequenceEqual(".\r\n"u8))
+                break;
+            await stream.WriteAsync(line);
+        }
+        return stream.ToArray();
+    }
+
     public async Task Disconnect()
     {
         await SendCommand(Pop3Command.QUIT);
         await _client.Disconnect();
+        Capabilities.Clear();
     }
+
 }

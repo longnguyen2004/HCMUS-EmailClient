@@ -6,11 +6,11 @@ namespace EmailClient;
 
 public partial class TextCommandClient : IAsyncDisposable
 {
-    private readonly static byte[] _newline = { 0x0d, 0x0a };
+    private readonly byte[] _buffer = new byte[1024];
     private readonly Socket _socket;
-    private StreamReader? _reader;
     private readonly string _host;
     private readonly ushort _port;
+    public Stream? SocketStream { get; private set; }
     public TextCommandClient(string host, ushort port)
     {
         if (Uri.CheckHostName(host) == UriHostNameType.Unknown)
@@ -22,7 +22,7 @@ public partial class TextCommandClient : IAsyncDisposable
     public async Task Connect()
     {
         if (_socket.Connected)
-            await _socket.DisconnectAsync(true);
+            await Disconnect();
         foreach (var address in (await Dns.GetHostEntryAsync(_host)).AddressList)
         {
             try
@@ -36,29 +36,54 @@ public partial class TextCommandClient : IAsyncDisposable
         }
         if (!_socket.Connected)
             throw new ApplicationException("Unable to connect to server");
-        _reader = new(new NetworkStream(_socket, false));
+        SocketStream = new BufferedStream(new NetworkStream(_socket, false));
     }
     public async Task Disconnect()
     {
-        _reader?.Dispose();
+        if (!Connected) return;
+        await SocketStream!.DisposeAsync();
+        SocketStream = null;
         await _socket.DisconnectAsync(false);
-        _reader = null;
     }
     public bool Connected => _socket.Connected;
-    public async Task SendMessage(string message)
+    public async Task SendMessage(ArraySegment<byte> message)
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        await _socket.SendAsync(Encoding.ASCII.GetBytes(message));
-        await _socket.SendAsync(_newline);
+        await SocketStream!.WriteAsync(message);
+        await SocketStream!.WriteAsync(StreamHelper.NewLine);
     }
-    public async Task<string> ReceiveMessage()
+    public async Task<byte[]> ReceiveMessage()
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        var readTask = _reader!.ReadLineAsync();
-        await readTask.WaitAsync(new TimeSpan(0, 0, 5));
-        return readTask.Result;
+        var received = 0;
+        do
+        {
+            await SocketStream!.ReadExactlyAsync(_buffer, received, 1).AsTask().WaitAsync(
+                new TimeSpan(0, 0, 5)
+            );
+        } while (_buffer[received++] != 0x0a);
+        // handles dot stuffing
+        if (_buffer[0] == 46 && _buffer[1] == 46)
+            return _buffer[1..received];
+        return _buffer[0..received];
+    }
+    public Task Send(ArraySegment<byte> buffer)
+    {
+        if (!Connected)
+            throw new ApplicationException("Client not connected!");
+        return SocketStream!.WriteAsync(buffer).AsTask().WaitAsync(
+            new TimeSpan(0, 0, 5)
+        );
+    }
+    public Task ReceiveExactly(ArraySegment<byte> buffer)
+    {
+        if (!Connected)
+            throw new ApplicationException("Client not connected!");
+        return SocketStream!.ReadExactlyAsync(buffer).AsTask().WaitAsync(
+            new TimeSpan(0, 0, 5)
+        );
     }
     public async ValueTask DisposeAsync()
     {
