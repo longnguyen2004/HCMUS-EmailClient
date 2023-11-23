@@ -36,6 +36,7 @@ namespace EmailClient.Gui.Component
                 DataContext = viewModel.To
             };
             dialog.ShowDialog();
+            ToTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
         private void AddorRemove_Cc(object sender, RoutedEventArgs e)
         {
@@ -44,6 +45,7 @@ namespace EmailClient.Gui.Component
                 DataContext = viewModel.Cc
             };
             dialog.ShowDialog();
+            CcTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
         private void AddorRemove_Bcc(object sender, RoutedEventArgs e)
         {
@@ -51,7 +53,8 @@ namespace EmailClient.Gui.Component
             {
                 DataContext = viewModel.Bcc
             };
-            dialog.ShowDialog();    
+            dialog.ShowDialog();
+            BccTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
     }
 }

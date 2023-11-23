@@ -8,11 +8,11 @@
         Title="Add/Remove an email address" Width="300" SizeToContent="Height" ResizeMode="NoResize">
     <StackPanel Orientation="Vertical">
         <ListBox x:Name="EmailList" ItemsSource="{Binding}" Height="300"/>
-        <DockPanel Grid.ColumnSpan="2" Margin="0,2,0,0">
-        <Label Grid.Row="0" Grid.Column="0" Content="Email:"/>
-        <TextBox Grid.Row="0" Grid.Column="1" TextAlignment="Left" x:Name="EmailTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
+        <DockPanel Margin="0,2,0,0">
+        <Label Content="Email:"/>
+        <TextBox TextAlignment="Left" x:Name="EmailTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
         </DockPanel>
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Margin" Value="2"/>

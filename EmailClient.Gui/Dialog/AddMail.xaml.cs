@@ -38,7 +38,7 @@ namespace EmailClient.Gui.Dialog
         }
         private void Remove(object sender, RoutedEventArgs e)
         {
-            var selected = EmailList.SelectedItems;
+            var selected = EmailList.SelectedItems.Cast<Email.EmailAddress>().ToList();
             foreach (Email.EmailAddress item in selected)
             {
                 ((ObservableIndexedSet<Email.EmailAddress>)DataContext).Remove(item);
