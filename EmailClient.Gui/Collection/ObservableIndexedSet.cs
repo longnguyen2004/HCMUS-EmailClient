@@ -27,7 +27,7 @@ public class ObservableIndexedSet<T> : IndexedSet<T>, INotifyCollectionChanged
         var index = IndexOfKey(item);
         if (index == -1) return false;
         base.Remove(item);
-        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, item, index));
         return true;
     }
     public new void Clear()
