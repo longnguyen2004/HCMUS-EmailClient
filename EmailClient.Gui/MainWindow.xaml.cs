@@ -98,6 +98,15 @@ namespace EmailClient.Gui
             var emailEntry = (EmailEntryViewModel)listBoxItem!.DataContext;
             emailEntry.IsRead = true;
 
+            foreach (TabItem currentTab in EmailBox.Items)
+            {
+                if (currentTab.DataContext == emailEntry.Email)
+                {
+                    EmailBox.SelectedItem = currentTab;
+                    return;
+                }
+            }
+
             TabItem tab = new()
             {
                 Content = new EmailViewer(),
