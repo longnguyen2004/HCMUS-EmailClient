@@ -131,6 +131,7 @@ namespace EmailClient.Gui
             }
             await Task.Run(() => _context?.SaveChanges());
             await pop3client.Disconnect();
+            _ = _vm.FetchMessages();
         }
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
