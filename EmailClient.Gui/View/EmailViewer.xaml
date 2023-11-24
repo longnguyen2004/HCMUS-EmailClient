@@ -16,7 +16,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -33,5 +34,34 @@
         <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="3" Grid.Column="1"/>
 
         <TextBox Margin="0,5,0,0" IsReadOnly="True" Text="{Binding TextBody, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="2"></TextBox>
+        <Label BorderThickness="0.5" BorderBrush="Gray" Grid.Row="5" Grid.Column="0">Attachments</Label>
+        <ListBox x:Name="AttachmentViewer" MouseDoubleClick="SaveAttachment" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
+         SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding FileName}">
+                        <TextBlock.ToolTip>
+                            <ToolTip Content="{Binding FileName}" />
+                        </TextBlock.ToolTip>
+                        <ToolTipService.InitialShowDelay>250</ToolTipService.InitialShowDelay>
+                    </TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MaxWidth" Value="150"/>
+                    <Setter Property="Height" Value="25"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
     </Grid>
 </UserControl>

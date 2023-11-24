@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,5 +25,23 @@ namespace EmailClient.Gui.View
         {
             InitializeComponent();
         }
+        private void SaveAttachment(object sender, EventArgs e)
+        {
+            var item = (IAttachment)AttachmentViewer.SelectedItem;
+            if (item == null) return;
+            var dialog = new Microsoft.Win32.SaveFileDialog();
+            string filename = item.FileName;
+            var dotIndex = filename.LastIndexOf('.');
+            string ext = filename.Substring(dotIndex + 1);
+            dialog.FileName = filename.Substring(0, dotIndex);
+            dialog.DefaultExt = ext;
+            dialog.Filter = $"All files (*.{ext})|*.{ext}";
+            if (dialog.ShowDialog() != true) return;
+            using (FileStream fs = new FileStream(dialog.FileName, FileMode.Create))
+            {
+                item.ToBytes().CopyTo(fs);
+            }
+        }
+
     }
 }
