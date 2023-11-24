@@ -2,6 +2,7 @@
 using EmailClient.Gui.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,5 +57,23 @@ namespace EmailClient.Gui.View
             dialog.ShowDialog();
             BccTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
+        private void AddAttachmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            Nullable<bool> result = dialog.ShowDialog();
+            if (result == null) return;
+            System.IO.FileInfo file = new(dialog.FileName);
+            if (file.Length > 3 * 1024 * 1024)
+                MessageBox.Show("Kích cỡ file vượt quá 3mb", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+                viewModel.Attachments.Add(new AttachmentLocal(file));
+        }
+        private void RemoveAttachmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = AttachmentsListBox.SelectedItems.Cast<IAttachment>().ToList();
+            foreach (var selectedItem in selectedItems)
+                viewModel.Attachments.Remove(selectedItem);
+        }
+
     }
 }

@@ -16,6 +16,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -37,12 +38,48 @@
         <Label Name="BccLabel" Grid.Row="2" Grid.Column="0" Content="Bcc:"/>
         <TextBox Grid.Row="2" Grid.Column="1" x:Name="BccTextBox" Text="{Binding Bcc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
         <Button  Width ="25" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Content="|+|" Click="AddorRemove_Bcc" />
-
         <!-- Subject -->
         <Label Grid.Row="3" Grid.Column="0" Content="Subject:"/>
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="SubjectTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2"/>
+        
+        <!-- Stackpanel binding to Attachments-->
+        <Label Grid.Row="4" Grid.Column="0" Content="Attachments:"/>
+        <ListBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" x:Name="AttachmentsListBox" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
+         SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding FileName}">
+                        <TextBlock.ToolTip>
+                            <ToolTip Content="{Binding FileName}" />
+                        </TextBlock.ToolTip>
+                        <ToolTipService.InitialShowDelay>10</ToolTipService.InitialShowDelay>
+                    </TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MaxWidth" Value="150"/>
+                    <Setter Property="Height" Value="25"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+
+
+        <UniformGrid Grid.Row="4" Grid.Column="2" Rows="1" Columns="2" HorizontalAlignment="Right" VerticalAlignment="Top" >
+            <Button x:Name="AddAttachmentButton"  Width ="20" Content="|+|" HorizontalAlignment="Right" VerticalContentAlignment="Center" Click="AddAttachmentButton_Click" />
+            <Button x:Name="RemoveAttachmentButton" Width ="20" Content="|x|" HorizontalAlignment="Right" VerticalContentAlignment="Center" Click="RemoveAttachmentButton_Click"/>
+        </UniformGrid>
 
         <!-- Message TextBox -->
-        <TextBox Grid.Row="4" Grid.ColumnSpan="3" x:Name="MessageTextBox" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="5,5,5,5"/>
+        <TextBox Grid.Row="5" Grid.ColumnSpan="3" x:Name="MessageTextBox" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="5,5,5,5"/>
     </Grid>
 </UserControl>
