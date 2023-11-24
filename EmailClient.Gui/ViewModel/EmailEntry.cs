@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EmailClient.Database;
 
@@ -7,7 +8,7 @@ public class EmailEntryViewModel: ObservableObject
 {
     readonly EmailEntry _entry;
     public string Id => _entry.Id;
-    public string Filter => _entry.Filter;
+    public ICollection<Filter> Filters => _entry.Filters;
     public Email Email => _entry.Email;
     public bool IsRead {
         get => _entry.IsRead;

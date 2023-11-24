@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EmailClient.Gui.Dialog;
+using EmailClient.Gui.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,21 +22,39 @@ namespace EmailClient.Gui.Component
     /// </summary>
     public partial class EmailComposer : UserControl
     {
+        public EmailComposerViewModel viewModel { get; set; } = new();
         public EmailComposer()
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
-        private void CcButton_Click(object sender, RoutedEventArgs e)
+        private void AddorRemove_To(object sender, RoutedEventArgs e)
         {
-            CcLabel.Visibility = Visibility.Visible;
-            CcTextBox.Visibility = Visibility.Visible;
+            var dialog = new AddMail()
+            {
+                DataContext = viewModel.To
+            };
+            dialog.ShowDialog();
+            ToTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
-
-        private void BccButton_Click(object sender, RoutedEventArgs e)
+        private void AddorRemove_Cc(object sender, RoutedEventArgs e)
         {
-            BccLabel.Visibility = Visibility.Visible;
-            BccTextBox.Visibility = Visibility.Visible;
+            var dialog = new AddMail()
+            {
+                DataContext = viewModel.Cc
+            };
+            dialog.ShowDialog();
+            CcTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+        }
+        private void AddorRemove_Bcc(object sender, RoutedEventArgs e)
+        {
+            var dialog = new AddMail()
+            {
+                DataContext = viewModel.Bcc
+            };
+            dialog.ShowDialog();
+            BccTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
     }
 }

@@ -17,7 +17,6 @@ using EmailClient.Database;
 using EmailClient.Gui.Component;
 using EmailClient.Gui.Dialog;
 using EmailClient.Gui.ViewModel;
-using Microsoft.EntityFrameworkCore;
 
 namespace EmailClient.Gui
 {
@@ -52,11 +51,6 @@ namespace EmailClient.Gui
             _context = new(Path.Join(messagePath, $"{app.GlobalConfig.General.Email}.db"));
             _vm = new(_context);
             DataContext = _vm;
-
-            await Task.Run(() => {
-                _context.Database.Migrate();
-                _context.Emails.Load();
-            });
 
             await _vm.FetchMessages();
         }
@@ -93,6 +87,15 @@ namespace EmailClient.Gui
             var emailEntry = (EmailEntryViewModel)listBoxItem!.DataContext;
             emailEntry.IsRead = true;
 
+            foreach (TabItem currentTab in EmailBox.Items)
+            {
+                if (currentTab.DataContext == emailEntry.Email)
+                {
+                    EmailBox.SelectedItem = currentTab;
+                    return;
+                }
+            }
+
             TabItem tab = new()
             {
                 Content = new EmailViewer(),
@@ -103,34 +106,9 @@ namespace EmailClient.Gui
             EmailBox.SelectedItem = tab;
         }
 
-        private async Task RefreshMailbox()
-        {
-            var app = (App)Application.Current;
-            Pop3Client pop3client = new (app.GlobalConfig.General.Pop3Host, app.GlobalConfig.General.Pop3Port);
-            await pop3client.Connect();
-            await pop3client.Login(app.GlobalConfig.General.Email, app.GlobalConfig.General.Password);
-            List<string> mailList = await pop3client.GetListing();
-            int i = 0;
-            foreach (var uid in mailList)
-            {
-                ++i;
-                if (_context.Emails.Find(new[]{ uid }) != null) continue;
-                MemoryStream stream = new(await pop3client.GetMessage(i));
-                EmailEntry emailEntry = new()
-                {
-                    Id = uid,
-                    IsRead = false,
-                    Email = new Email((await MimeParser.Parse(stream))!)
-                };
-                _context.Emails.Add(emailEntry);
-            }
-            await Task.Run(() => _context.SaveChanges());
-            await pop3client.Disconnect();
-        }
-
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await RefreshMailbox();
+            await _vm.FetchMessages();
         }
 
         private void ComposeNewMail(object sender, RoutedEventArgs e)
