@@ -53,8 +53,6 @@ namespace EmailClient.Gui
             _context = new(Path.Join(messagePath, $"{app.GlobalConfig.General.Email}.db"));
             _vm = new(_context);
             DataContext = _vm;
-
-            await _vm.FetchMessages();
         }
         private async Task Logout()
         {
