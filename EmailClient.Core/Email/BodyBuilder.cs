@@ -6,7 +6,7 @@ public class BodyBuilder
 {
     public string TextBody { get; set; } = string.Empty;
     public string? HtmlBody { get; set; }
-    public IEnumerable<IAttachment> Attachments { get; set; } = new List<IAttachment>();
+    public ICollection<IAttachment> Attachments { get; set; } = new List<IAttachment>();
 
     public BodyBuilder()
     {
