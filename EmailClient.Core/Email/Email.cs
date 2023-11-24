@@ -99,10 +99,9 @@ public partial class Email
             if (value == null)
                 return;
 
+            List<IAttachment> attachments = new();
             foreach (var entity in MimeIterator.Get(value))
             {
-                if (_textBodyPart != null && _htmlBodyPart != null)
-                    break;
                 if (entity is MimePart part)
                 {
                     if (part.ContentType == "text/plain")
@@ -110,7 +109,10 @@ public partial class Email
                     else if (part.ContentType == "text/html")
                         _htmlBodyPart ??= part;
                 }
+                else if (entity is MimeAttachment attachment)
+                    attachments.Add(attachment.Attachment);
             }
+            Attachments = attachments;
         }
     }
     public IEnumerable<IAttachment> Attachments { get; private set; } = Array.Empty<IAttachment>();
