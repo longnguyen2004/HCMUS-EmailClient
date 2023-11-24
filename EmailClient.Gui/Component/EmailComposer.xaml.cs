@@ -61,8 +61,12 @@ namespace EmailClient.Gui.Component
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             Nullable<bool> result = dialog.ShowDialog();
-            if (result == true)
-                viewModel.Attachments.Add(new AttachmentLocal(new System.IO.FileInfo(dialog.FileName)));
+            if (result == null) return;
+            System.IO.FileInfo file = new(dialog.FileName);
+            if (file.Length > 3 * 1024 * 1024)
+                MessageBox.Show("Kích cỡ file vượt quá 3mb", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+                viewModel.Attachments.Add(new AttachmentLocal(file));
         }
         private void RemoveAttachmentButton_Click(object sender, RoutedEventArgs e)
         {
