@@ -74,6 +74,27 @@ namespace EmailClient.Gui.View
             foreach (var selectedItem in selectedItems)
                 viewModel.Attachments.Remove(selectedItem);
         }
+        private async void SendEmail(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            SmtpClient smtpClient = new(app.GlobalConfig.General.SmtpHost, app.GlobalConfig.General.SmtpPort);
+            await smtpClient.Connect();
+            Email email = new()
+            {
+                From = new Email.EmailAddress(app.GlobalConfig.General.Email),
+                To = viewModel.To,
+                Cc = viewModel.Cc,
+                Bcc = viewModel.Bcc,
+                Subject = viewModel.Subject,
+                Body = (new BodyBuilder()
+                {
+                    TextBody = viewModel.Body,
+                    Attachments = viewModel.Attachments
+                }).GetMessageBody(),
+            };
+            await smtpClient.SendEmail(email);
 
+            await smtpClient.Disconnect();
+        }
     }
 }

@@ -80,6 +80,7 @@
         </UniformGrid>
 
         <!-- Message TextBox -->
-        <TextBox Grid.Row="5" Grid.ColumnSpan="3" x:Name="MessageTextBox" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="5,5,5,5"/>
+        <TextBox Grid.Row="5" Grid.ColumnSpan="3" x:Name="MessageTextBox" Text ="{Binding Body}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="5,5,5,5"/>
+        <Button Content="Gửi" Grid.Column="2" Height="28" Margin="0,0,5,5" Grid.Row="6" Width="103" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="SendEmail"/>
     </Grid>
 </UserControl>
