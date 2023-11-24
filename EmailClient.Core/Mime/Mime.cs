@@ -53,7 +53,10 @@ public partial class MimeHeaderValue
         var chunkLength = 72;
         for (int i = 0; i < input.Length; i += chunkLength)
         {
-            var base64 = BodyProcessor.EncodeBase64(input.Substring(i, chunkLength));
+            var base64 = BodyProcessor.EncodeBase64(
+                input.Substring(i, Math.Min(chunkLength, input.Length - i)),
+                addNewline: false
+            );
             encodedFragments.Add($"=?utf-8?B?{base64}?=");
         }
         return string.Join(" \r\n", encodedFragments);
