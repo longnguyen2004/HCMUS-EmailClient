@@ -35,7 +35,7 @@ namespace EmailClient.Gui.View
             string ext = filename.Substring(dotIndex + 1);
             dialog.FileName = filename.Substring(0, dotIndex);
             dialog.DefaultExt = ext;
-            dialog.Filter = $"All files (*.{ext})|*.{ext}";
+            dialog.Filter = $"All files (*.*)|*.*";
             if (dialog.ShowDialog() != true) return;
             using (FileStream fs = new FileStream(dialog.FileName, FileMode.Create))
             {
