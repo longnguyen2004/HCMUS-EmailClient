@@ -95,6 +95,7 @@ namespace EmailClient.Gui.View
             await smtpClient.SendEmail(email);
 
             await smtpClient.Disconnect();
+            MessageBox.Show("Đã gửi thành công", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

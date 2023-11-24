@@ -29,16 +29,16 @@
 
         <!-- To -->
         <Label Grid.Row="0" Grid.Column="0" Content="To:"/>
-        <TextBox Grid.Row="0" IsReadOnly="True" Grid.Column="1" x:Name="ToTextBox" Text="{Binding To, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <TextBox MouseDoubleClick="AddorRemove_To" Grid.Row="0" IsReadOnly="True" Grid.Column="1" x:Name="ToTextBox" Text="{Binding To, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
         <Button Width ="25" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" fa:Content.Icon="SolidPlus" Click="AddorRemove_To" />
         <!-- Buttons -->
 
         <!-- Labels and TextBoxes -->
-        <Label Name="CcLabel" Grid.Row="1" Grid.Column="0" Content="Cc:"/>
-        <TextBox Grid.Row="1" IsReadOnly="True" Grid.Column="1" x:Name="CcTextBox" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Cc:"/>
+        <TextBox MouseDoubleClick="AddorRemove_Cc" Grid.Row="1" IsReadOnly="True" Grid.Column="1" x:Name="CcTextBox" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
         <Button  Width ="25" Grid.Row ="1" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" fa:Content.Icon="SolidPlus" Click="AddorRemove_Cc" />
-        <Label Name="BccLabel" Grid.Row="2" Grid.Column="0" Content="Bcc:"/>
-        <TextBox Grid.Row="2" IsReadOnly="True" Grid.Column="1" x:Name="BccTextBox" Text="{Binding Bcc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="Bcc:"/>
+        <TextBox MouseDoubleClick="AddorRemove_Bcc" Grid.Row="2" IsReadOnly="True" Grid.Column="1" x:Name="BccTextBox" Text="{Binding Bcc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
         <Button  Width ="25" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" fa:Content.Icon="SolidPlus" Click="AddorRemove_Bcc" />
         <!-- Subject -->
         <Label Grid.Row="3" Grid.Column="0" Content="Subject:"/>
@@ -50,11 +50,11 @@
          SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding FileName}">
+                    <TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding FileName}">
                         <TextBlock.ToolTip>
                             <ToolTip Content="{Binding FileName}" />
                         </TextBlock.ToolTip>
-                        <ToolTipService.InitialShowDelay>10</ToolTipService.InitialShowDelay>
+                        <ToolTipService.InitialShowDelay>250</ToolTipService.InitialShowDelay>
                     </TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
