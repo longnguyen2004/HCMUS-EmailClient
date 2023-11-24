@@ -30,6 +30,7 @@ public partial class MimeParser
         var state = MimeParserState.Headers;
         MimeEntity? entity = null;
         Dictionary<string, MimeHeaderValue>? headers = null;
+        StringBuilder headerBuilder = new();
         StringBuilder bodyBuilder = new();
         var buffer = new byte[1024];
         var len = 0;
@@ -107,14 +108,28 @@ public partial class MimeParser
                             if (headers == null)
                                 throw new MimeParserException("Expected header, got blank line", string.Empty);
                             state = MimeParserState.Body;
-                            break;
                         }
                         headers ??= new();
-                        var match = HeaderRegex().Match(line);
+                        if (line.Length > 0 && char.IsWhiteSpace(line[0]))
+                        {
+                            if (headerBuilder.Length == 0)
+                                throw new MimeParserException("Invalid continuation line", line);
+                            headerBuilder.Append(line.TrimStart());
+                            continue;
+                        }
+                        if (headerBuilder.Length == 0)
+                        {
+                            headerBuilder.Append(line);
+                            continue;
+                        }
+                        var headerLine = headerBuilder.ToString();
+                        headerBuilder.Clear();
+                        headerBuilder.Append(line);
+                        var match = HeaderRegex().Match(headerLine);
                         if (!match.Success)
-                            throw new MimeParserException("Invalid header format", line);
+                            throw new MimeParserException("Invalid header format", headerLine);
                         MimeHeaderValue value = new(match.Groups["value"].Value);
-                        foreach (var extraMatch in HeaderExtraDataRegex().Matches(line).Cast<Match>())
+                        foreach (var extraMatch in HeaderExtraDataRegex().Matches(headerLine).Cast<Match>())
                         {
                             value.ExtraValues.Add(
                                 extraMatch.Groups["key"].Value,
