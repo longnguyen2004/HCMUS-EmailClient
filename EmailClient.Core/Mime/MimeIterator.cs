@@ -11,7 +11,7 @@ public class MimeIterator
             var current = stack.Pop();
             if (current is MimeMultipart multipart)
             {
-                for (var i = multipart.Parts.Count - 1; i > 0; --i)
+                for (var i = multipart.Parts.Count - 1; i >= 0; --i)
                     stack.Push(multipart.Parts[i]);
             }
             else
