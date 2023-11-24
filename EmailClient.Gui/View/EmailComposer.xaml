@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EmailClient.Gui.View"
              xmlns:conv="clr-namespace:EmailClient.Gui.Converter"
+             xmlns:fa="https://dsaladin.dev/products/fontawesome/wpf/xaml"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="800" d:Background="White">
     <UserControl.Resources>
@@ -16,35 +17,36 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="373*" />
-            <ColumnDefinition Width="375*"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- To -->
         <Label Grid.Row="0" Grid.Column="0" Content="To:"/>
         <TextBox Grid.Row="0" IsReadOnly="True" Grid.Column="1" x:Name="ToTextBox" Text="{Binding To, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
-        <Button Width ="25" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Content="|+|" Click="AddorRemove_To" />
+        <Button Width ="25" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" fa:Content.Icon="SolidPlus" Click="AddorRemove_To" />
         <!-- Buttons -->
 
         <!-- Labels and TextBoxes -->
         <Label Name="CcLabel" Grid.Row="1" Grid.Column="0" Content="Cc:"/>
         <TextBox Grid.Row="1" IsReadOnly="True" Grid.Column="1" x:Name="CcTextBox" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
-        <Button  Width ="25" Grid.Row ="1" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Content="|+|" Click="AddorRemove_Cc" />
+        <Button  Width ="25" Grid.Row ="1" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" fa:Content.Icon="SolidPlus" Click="AddorRemove_Cc" />
         <Label Name="BccLabel" Grid.Row="2" Grid.Column="0" Content="Bcc:"/>
         <TextBox Grid.Row="2" IsReadOnly="True" Grid.Column="1" x:Name="BccTextBox" Text="{Binding Bcc, Mode=OneWay, Converter={StaticResource emailListConverter}}" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
-        <Button  Width ="25" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Content="|+|" Click="AddorRemove_Bcc" />
+        <Button  Width ="25" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" fa:Content.Icon="SolidPlus" Click="AddorRemove_Bcc" />
         <!-- Subject -->
         <Label Grid.Row="3" Grid.Column="0" Content="Subject:"/>
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="SubjectTextBox" Text="{Binding Subject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2"/>
         
         <!-- Stackpanel binding to Attachments-->
-        <Label Grid.Row="4" Grid.Column="0" Content="Attachments:"/>
-        <ListBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" x:Name="AttachmentsListBox" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
+        <Label Grid.Row="5" Grid.Column="0" Content="Attachments:"/>
+        <ListBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" x:Name="AttachmentsListBox" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
          SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -74,13 +76,13 @@
         </ListBox>
 
 
-        <UniformGrid Grid.Row="4" Grid.Column="2" Rows="1" Columns="2" HorizontalAlignment="Right" VerticalAlignment="Top" >
-            <Button x:Name="AddAttachmentButton"  Width ="20" Content="|+|" HorizontalAlignment="Right" VerticalContentAlignment="Center" Click="AddAttachmentButton_Click" />
-            <Button x:Name="RemoveAttachmentButton" Width ="20" Content="|x|" HorizontalAlignment="Right" VerticalContentAlignment="Center" Click="RemoveAttachmentButton_Click"/>
+        <UniformGrid Grid.Row="5" Grid.Column="2" Rows="1" Columns="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" >
+            <Button x:Name="AddAttachmentButton" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" fa:Content.Icon="SolidPlus" HorizontalAlignment="Right" VerticalContentAlignment="Center" Click="AddAttachmentButton_Click" />
+            <Button x:Name="RemoveAttachmentButton" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" fa:Content.Icon="SolidMinus" HorizontalAlignment="Right" VerticalContentAlignment="Center" Click="RemoveAttachmentButton_Click"/>
         </UniformGrid>
 
         <!-- Message TextBox -->
-        <TextBox Grid.Row="5" Grid.ColumnSpan="3" x:Name="MessageTextBox" Text ="{Binding Body}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="5,5,5,5"/>
-        <Button Content="Gửi" Grid.Column="2" Height="28" Margin="0,0,5,5" Grid.Row="6" Width="103" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="SendEmail"/>
+        <TextBox Grid.Row="4" Grid.ColumnSpan="3" x:Name="MessageTextBox" Text ="{Binding Body}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="5,5,5,5"/>
+        <Button Grid.Row="6" Content="Gửi" Grid.Column="2" Height="28" Width="103" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="SendEmail"/>
     </Grid>
 </UserControl>
