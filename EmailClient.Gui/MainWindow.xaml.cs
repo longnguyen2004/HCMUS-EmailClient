@@ -18,6 +18,7 @@ using EmailClient.Gui.Control;
 using EmailClient.Gui.View;
 using EmailClient.Gui.ViewModel;
 using EmailClient.Gui.Dialog;
+using EmailClient.Gui.Converter;
 
 namespace EmailClient.Gui
 {
@@ -100,7 +101,8 @@ namespace EmailClient.Gui
             CloseableTabItem tab = new()
             {
                 Content = new EmailViewer(),
-                DataContext = emailEntry.Email
+                DataContext = emailEntry.Email,
+                MaxWidth = 150
             };
             tab.SetBinding(TabItem.HeaderProperty, new Binding("Subject"));
             EmailBox.Items.Add(tab);
@@ -114,10 +116,19 @@ namespace EmailClient.Gui
 
         private void ComposeNewMail(object sender, RoutedEventArgs e)
         {
+            EmailComposer composer = new();
             CloseableTabItem tab = new()
             {
-                Content = new EmailComposer()
+                Content = composer,
+                MaxWidth = 150
             };
+            tab.SetBinding(TabItem.HeaderProperty, new Binding(nameof(composer.viewModel.Subject))
+            {
+                Source = composer.viewModel,
+                Converter = new EmptyStringFallbackConverter(),
+                ConverterParameter = "New Email",
+                Mode = BindingMode.OneWay
+            });
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;
         }

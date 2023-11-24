@@ -40,7 +40,7 @@
         <Button  Width ="25" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Content="|+|" Click="AddorRemove_Bcc" />
         <!-- Subject -->
         <Label Grid.Row="3" Grid.Column="0" Content="Subject:"/>
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="SubjectTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2"/>
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="SubjectTextBox" Text="{Binding Subject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2"/>
         
         <!-- Stackpanel binding to Attachments-->
         <Label Grid.Row="4" Grid.Column="0" Content="Attachments:"/>
