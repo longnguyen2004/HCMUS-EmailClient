@@ -8,6 +8,8 @@ public partial class MimeHeaderValue
 {
     [GeneratedRegex("""(["\\])""")]
     public static partial Regex EscapedChars();
+    [GeneratedRegex("""=\?(?<charset>[A-Za-z0-9-]+)\?(?<encoding>Q|q|B|b)\?(?<text>.+?)\?=""")]
+    public static partial Regex EncodedWordRegex();
     public string Value { get; }
     public Dictionary<string, string> ExtraValues { get; }
     public MimeHeaderValue(string value, Dictionary<string, string>? extraValues = null)
@@ -28,6 +30,33 @@ public partial class MimeHeaderValue
             builder.Append('"');
         }
         return builder.ToString();
+    }
+
+    public static string FromEncodedWord(string input)
+    {
+        return EncodedWordRegex().Replace(input, (match) => {
+            var charset = match.Groups["charset"].Value!;
+            var encoding = match.Groups["encoding"].Value!;
+            var text = match.Groups["text"].Value!;
+            return encoding[0] switch
+            {
+                'Q' or 'q' => BodyProcessor.DecodeQuotedPrintable(text, charset),
+                'B' or 'b' => BodyProcessor.DecodeBase64(text, charset),
+                _ => throw new ApplicationException($"Unknown encoding format {encoding[0]}, expected Q or B"),
+            };
+        });
+    }
+    public static string ToEncodedWord(string input)
+    {
+        List<string> encodedFragments = new();
+        // Chunk length arbitrarily chosen
+        var chunkLength = 72;
+        for (int i = 0; i < input.Length; i += chunkLength)
+        {
+            var base64 = BodyProcessor.EncodeBase64(input.Substring(i, chunkLength));
+            encodedFragments.Add($"=?utf-8?B?{base64}?=");
+        }
+        return string.Join(" \r\n", encodedFragments);
     }
 }
 
