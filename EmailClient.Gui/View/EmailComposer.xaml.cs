@@ -61,7 +61,7 @@ namespace EmailClient.Gui.View
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             Nullable<bool> result = dialog.ShowDialog();
-            if (result == null) return;
+            if (result == false) return;
             System.IO.FileInfo file = new(dialog.FileName);
             if (file.Length > 3 * 1024 * 1024)
                 MessageBox.Show("Kích cỡ file vượt quá 3mb", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
