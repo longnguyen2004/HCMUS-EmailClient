@@ -35,7 +35,7 @@ public class BodyProcessor
                 }
                 // Decode the hex value
                 var hexVal = line.Substring(i, 2);
-                stream.WriteByte(Convert.ToByte(hexVal));
+                stream.WriteByte(Convert.ToByte(hexVal, 16));
                 i += 2;
             }
             if (nextLine)
