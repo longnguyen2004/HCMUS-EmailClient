@@ -70,7 +70,7 @@ public partial class Email
         {
             if (_textBodyPart == null)
                 return null;
-            _textBodyDecoded = BodyDecoder.Decode(_textBodyPart);
+            _textBodyDecoded = BodyProcessor.Decode(_textBodyPart);
         }
         return _textBodyDecoded;
     } }
@@ -81,7 +81,7 @@ public partial class Email
         {
             if (_htmlBodyPart == null)
                 return null;
-            _htmlBodyDecoded = BodyDecoder.Decode(_htmlBodyPart);
+            _htmlBodyDecoded = BodyProcessor.Decode(_htmlBodyPart);
         }
         return _htmlBodyDecoded;
     } }

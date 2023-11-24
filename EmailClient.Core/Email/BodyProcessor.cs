@@ -3,7 +3,7 @@ using System.Text;
 
 namespace EmailClient;
 
-public class BodyDecoder
+public class BodyProcessor
 {
     public static string DecodeBase64(string b64String, string charset)
     {
