@@ -14,9 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using EmailClient.Database;
+using EmailClient.Gui.Control;
 using EmailClient.Gui.View;
-using EmailClient.Gui.Dialog;
 using EmailClient.Gui.ViewModel;
+using EmailClient.Gui.Dialog;
 
 namespace EmailClient.Gui
 {
@@ -96,7 +97,7 @@ namespace EmailClient.Gui
                 }
             }
 
-            TabItem tab = new()
+            CloseableTabItem tab = new()
             {
                 Content = new EmailViewer(),
                 DataContext = emailEntry.Email
@@ -113,7 +114,7 @@ namespace EmailClient.Gui
 
         private void ComposeNewMail(object sender, RoutedEventArgs e)
         {
-            TabItem tab = new()
+            CloseableTabItem tab = new()
             {
                 Content = new EmailComposer()
             };
