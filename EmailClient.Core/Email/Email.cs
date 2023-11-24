@@ -130,7 +130,7 @@ public partial class Email
         if (mime.Headers.TryGetValue("Date", out var date))
             Date = DateTime.Parse(date.Value);
         if (mime.Headers.TryGetValue("Subject", out var subject))
-            Subject = subject.Value;
+            Subject = MimeHeaderValue.FromEncodedWord(subject.Value);
         MessageId = mime.Headers["Message-ID"].Value[1..^1];
         Body = mime;
     }
@@ -155,9 +155,9 @@ public partial class Email
         if (Cc.Count > 0)
             message.Headers["Cc"] = new(string.Join(", ", Cc.Select(email => email.ToStringPunycode())));
         if (Date != null)
-            message.Headers["Date"] = new(string.Format("{0:r}", Date));
+            message.Headers["Date"] = new($"{Date:r}");
         if (Subject != null)
-            message.Headers["Subject"] = new(Subject);
+            message.Headers["Subject"] = new(MimeHeaderValue.ToEncodedWord(Subject));
 
         if (MessageId == null)
         {
