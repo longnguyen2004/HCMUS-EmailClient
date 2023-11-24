@@ -70,7 +70,7 @@ public partial class Email
         {
             if (_textBodyPart == null)
                 return null;
-            _textBodyDecoded = BodyDecoder.Decode(_textBodyPart);
+            _textBodyDecoded = BodyProcessor.Decode(_textBodyPart);
         }
         return _textBodyDecoded;
     } }
@@ -81,7 +81,7 @@ public partial class Email
         {
             if (_htmlBodyPart == null)
                 return null;
-            _htmlBodyDecoded = BodyDecoder.Decode(_htmlBodyPart);
+            _htmlBodyDecoded = BodyProcessor.Decode(_htmlBodyPart);
         }
         return _htmlBodyDecoded;
     } }
@@ -99,35 +99,17 @@ public partial class Email
             if (value == null)
                 return;
 
-            // Regular email without multipart
-            if (Body is MimePart mimePart)
+            foreach (var entity in MimeIterator.Get(value))
             {
-                _textBodyPart = mimePart;
-            }
-            else if (Body is MimeMultipart mimeMultipart)
-            {
-                var firstPart = mimeMultipart.Parts[0];
-                if (firstPart is MimePart body && body.ContentType == "text/plain")
+                if (_textBodyPart != null && _htmlBodyPart != null)
+                    break;
+                if (entity is MimePart part)
                 {
-                    _textBodyPart = body;
+                    if (part.ContentType == "text/plain")
+                        _textBodyPart ??= part;
+                    else if (part.ContentType == "text/html")
+                        _htmlBodyPart ??= part;
                 }
-                else if (firstPart is MimeMultipart alternative)
-                {
-                    foreach (var altPart in alternative.Parts.Where(part => part is MimePart).Cast<MimePart>())
-                    {
-                        if (altPart.ContentType == "text/plain")
-                            _textBodyPart ??= altPart;
-                        else if (altPart.ContentType == "text/html")
-                            _htmlBodyPart ??= altPart;
-                    }
-                }
-                var attachments = new List<IAttachment>();
-                foreach (var part in mimeMultipart.Parts)
-                {
-                    if (part is MimeAttachment attachPart)
-                        attachments.Add(attachPart.Attachment);
-                }
-                Attachments = attachments;
             }
         }
     }

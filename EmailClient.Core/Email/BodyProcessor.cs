@@ -3,7 +3,7 @@ using System.Text;
 
 namespace EmailClient;
 
-public class BodyDecoder
+public class BodyProcessor
 {
     public static string DecodeBase64(string b64String, string charset)
     {
@@ -35,7 +35,7 @@ public class BodyDecoder
                 }
                 // Decode the hex value
                 var hexVal = line.Substring(i, 2);
-                stream.WriteByte(Convert.ToByte(hexVal));
+                stream.WriteByte(Convert.ToByte(hexVal, 16));
                 i += 2;
             }
             if (nextLine)
