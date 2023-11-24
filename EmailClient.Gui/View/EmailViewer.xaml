@@ -22,20 +22,25 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition />
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Margin="0,0,0,5" Grid.ColumnSpan="2" Text="{Binding Subject}" FontWeight="Bold" FontSize="25"/>
-
+        <TextBlock Margin="0,0,0,5" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Grid.ColumnSpan="2" Text="{Binding Subject}" FontWeight="Bold" FontSize="25">
+            <TextBlock.ToolTip>
+                <ToolTip Content="{Binding Subject, Mode=OneWay}"/>
+            </TextBlock.ToolTip>
+        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="2" Width="Auto" Margin="5,0,5,0" Text="{Binding Date, Mode=OneWay}"/>
         <Label Grid.Row="1" Grid.Column="0">From</Label>
         <Label Grid.Row="2" Grid.Column="0">To</Label>
         <Label Grid.Row="3" Grid.Column="0">Cc</Label>
 
-        <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding From, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
-        <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding To, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="2" Grid.Column="1"/>
-        <TextBox VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="3" Grid.Column="1"/>
+        <TextBox Grid.ColumnSpan="2" VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding From, Mode=OneWay}" Grid.Row="1" Grid.Column="1"/>
+        <TextBox Grid.ColumnSpan="2" VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding To, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="2" Grid.Column="1"/>
+        <TextBox Grid.ColumnSpan="2" VerticalContentAlignment="Center" IsReadOnly="True" Text="{Binding Cc, Mode=OneWay, Converter={StaticResource emailListConverter}}" Grid.Row="3" Grid.Column="1"/>
 
-        <TextBox Margin="0,5,0,0" IsReadOnly="True" Text="{Binding TextBody, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="2"></TextBox>
+        <TextBox Margin="0,5,0,0" IsReadOnly="True" Text="{Binding TextBody, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="3"></TextBox>
         <Label BorderThickness="0.5" BorderBrush="Gray" Grid.Row="5" Grid.Column="0">Attachments</Label>
-        <ListBox x:Name="AttachmentViewer" MouseDoubleClick="SaveAttachment" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
+        <ListBox x:Name="AttachmentViewer" MouseDoubleClick="SaveAttachment" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
          SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>

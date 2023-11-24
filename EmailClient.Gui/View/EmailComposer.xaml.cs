@@ -81,6 +81,7 @@ namespace EmailClient.Gui.View
             await smtpClient.Connect();
             Email email = new()
             {
+                Date = DateTime.UtcNow,
                 From = new Email.EmailAddress(app.GlobalConfig.General.Email),
                 To = viewModel.To,
                 Cc = viewModel.Cc,
