@@ -43,7 +43,7 @@ public class BodyProcessor
         }
         return Encoding.GetEncoding(charset).GetString(stream.ToArray());
     }
-    public static string EncodeBase64(string body, string charset = "utf-8")
+    public static string EncodeBase64(string body, string charset = "utf-8", bool addNewline = true)
     {
         StringBuilder builder = new();
         using MemoryStream stream = new(Encoding.GetEncoding(charset).GetBytes(body));
@@ -51,7 +51,11 @@ public class BodyProcessor
         var buffer = new byte[72];
         int read;
         while ((read = b64stream.Read(buffer)) != 0)
-            builder.AppendLine(Encoding.ASCII.GetString(buffer, 0, read));
+        {
+            builder.Append(Encoding.ASCII.GetString(buffer, 0, read));
+            if (addNewline)
+                builder.AppendLine();
+        }
         return builder.ToString();
     }
     public static string Decode(MimePart part)
