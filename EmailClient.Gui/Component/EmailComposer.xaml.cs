@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace EmailClient.Gui.Component
+namespace EmailClient.Gui.View
 {
     /// <summary>
     /// Interaction logic for EmailWriter.xaml

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmailClient.Gui"
-        xmlns:component="clr-namespace:EmailClient.Gui.Component"
+        xmlns:component="clr-namespace:EmailClient.Gui.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         Loaded="Window_Loaded" Closed="Window_Closed">

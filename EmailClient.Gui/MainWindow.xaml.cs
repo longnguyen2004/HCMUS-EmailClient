@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using EmailClient.Database;
-using EmailClient.Gui.Component;
+using EmailClient.Gui.View;
 using EmailClient.Gui.Dialog;
 using EmailClient.Gui.ViewModel;
 
