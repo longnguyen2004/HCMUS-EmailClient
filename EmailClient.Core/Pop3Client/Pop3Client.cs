@@ -27,11 +27,16 @@ public partial class Pop3Client
 
     private async Task<Pop3Response> SendCommand(Pop3Command command, string parameter = "")
     {
-        if (parameter.Length == 0)
-            await _client.SendMessage(Encoding.ASCII.GetBytes(command.ToString()));
+        string message;
+        if (parameter.Length == 0) 
+            message = command.ToString();
         else
-            await _client.SendMessage(Encoding.ASCII.GetBytes($"{command} {parameter}"));
-        return await ParseResponse(command.Multiline);
+            message = $"{command} {parameter}";
+        await _client.SendMessage(Encoding.ASCII.GetBytes(message));
+        Console.WriteLine("==> " + message);
+        var returnmessage = await ParseResponse(command.Multiline);
+        Console.WriteLine("<== " + returnmessage);
+        return returnmessage;
     }
 
     public class Pop3Response

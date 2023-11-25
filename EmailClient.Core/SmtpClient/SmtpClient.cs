@@ -47,7 +47,10 @@ public class SmtpClient
         await _client.SendMessage(
             Encoding.ASCII.GetBytes(string.Format(command.Value, parameter))
         );
-        return await ParseResponse();
+        var response = await ParseResponse();
+        Console.WriteLine("==> " + string.Format(command.Value, parameter));
+        Console.WriteLine("<== " + response);
+        return response;
     }
     private async Task<SmtpResponse> ParseResponse()
     {

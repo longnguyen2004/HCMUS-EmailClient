@@ -19,6 +19,8 @@ using EmailClient.Gui.View;
 using EmailClient.Gui.ViewModel;
 using EmailClient.Gui.Dialog;
 using EmailClient.Gui.Converter;
+using Castle.Core.Smtp;
+using System.Threading;
 
 namespace EmailClient.Gui
 {
@@ -127,6 +129,18 @@ namespace EmailClient.Gui
                 ConverterParameter = "New Email",
                 Mode = BindingMode.OneWay
             });
+            EmailBox.Items.Add(tab);
+            EmailBox.SelectedItem = tab;
+        }
+        private void ConsoleButton_Click(object sender, RoutedEventArgs e)
+        {
+            ConsoleOutput dialog = new();
+            CloseableTabItem tab = new()
+            {
+                Header = "Console Output",
+                Content = dialog,
+                MaxWidth = 150,
+            };
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;
         }

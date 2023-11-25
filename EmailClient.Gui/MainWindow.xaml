@@ -26,6 +26,7 @@
             <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
                 <MenuItem Header="Đăng xuất" Click="LogoutThenLogin"/>
                 <MenuItem Header="Làm mới" Click="RefreshButton_Click"/>
+                <MenuItem Header="DebugConsole" Click="ConsoleButton_Click"/>
             </MenuItem>
             <MenuItem HorizontalAlignment="Right" x:Name="AccountBar" FontWeight="Bold"/>
         </Menu>
