@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmailClient.Gui"
+        xmlns:fa="https://dsaladin.dev/products/fontawesome/wpf/xaml"
         xmlns:component="clr-namespace:EmailClient.Gui.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
@@ -24,8 +25,16 @@
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem HorizontalAlignment="Left" Header="Cài đặt" VerticalAlignment="Top">
-                <MenuItem Header="Đăng xuất" Click="LogoutThenLogin"/>
-                <MenuItem Header="Làm mới" Click="RefreshButton_Click"/>
+                <MenuItem Header="Đăng xuất" Click="LogoutThenLogin">
+                    <MenuItem.Icon>
+                        <fa:FontAwesomeImage Icon="SolidRightFromBracket" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Làm mới" Click="RefreshButton_Click">
+                    <MenuItem.Icon>
+                        <fa:FontAwesomeImage Icon="SolidArrowRotateLeft"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem HorizontalAlignment="Right" x:Name="AccountBar" FontWeight="Bold"/>
         </Menu>
