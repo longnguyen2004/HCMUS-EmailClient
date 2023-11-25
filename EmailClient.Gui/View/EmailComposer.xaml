@@ -45,7 +45,7 @@
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="SubjectTextBox" Text="{Binding Subject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" Grid.ColumnSpan="2"/>
         
         <!-- Stackpanel binding to Attachments-->
-        <Label Grid.Row="5" Grid.Column="0" Content="Attachments:"/>
+        <Label Grid.Row="5" Grid.Column="0" Content="Tệp đính kèm:"/>
         <ListBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" x:Name="AttachmentsListBox" ItemsSource="{Binding Attachments, Mode=OneWay}" HorizontalAlignment="Stretch" 
          SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>

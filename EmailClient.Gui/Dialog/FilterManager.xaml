@@ -30,19 +30,19 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,10" Click="Remove">Remove</Button>
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Margin="10,10,10,10" Click="Remove">Xóa</Button>
         <Label Grid.Row="2" Content="Loại bộ lọc"/>
-        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="FilterType" VerticalContentAlignment="Center">
+        <ComboBox Margin="0,0,10,0" Grid.Row="2" Grid.Column="1" x:Name="FilterType" VerticalContentAlignment="Center">
             <ComboBoxItem Name="From">Dựa vào địa chỉ người gửi</ComboBoxItem>
             <ComboBoxItem Name="Subject">Dựa trên subject</ComboBoxItem>
             <ComboBoxItem Name="Content">Dựa trên nội dung</ComboBoxItem>
             <ComboBoxItem Name="Folder">Thư mục cụ thể</ComboBoxItem>
         </ComboBox>
         <Label Grid.Row="3" Content="Từ khóa"/>
-        <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Left" x:Name="Keyword" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
+        <TextBox Margin="0,0,10,0" Grid.Row="3" Grid.Column="1" TextAlignment="Left" x:Name="Keyword" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
         <Label Grid.Row="4" Content="Thư mục"/>
-        <TextBox Grid.Row="4" Grid.Column="1" TextAlignment="Left" x:Name="EmailTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
-        <Button Grid.Row="5" Grid.ColumnSpan="2" Click="Add" Margin="10,10,10,10">Add</Button>
+        <TextBox Margin="0,0,10,0" Grid.Row="4" Grid.Column="1" TextAlignment="Left" x:Name="EmailTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
+        <Button Grid.Row="5" Grid.ColumnSpan="2" Click="Add" Margin="10,10,10,10">Thêm</Button>
 
     </Grid>
 </Window>
