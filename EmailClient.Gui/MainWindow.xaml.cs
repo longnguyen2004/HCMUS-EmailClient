@@ -130,5 +130,14 @@ namespace EmailClient.Gui
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;
         }
+
+        private void FilterManage(object sender, RoutedEventArgs e)
+        {
+            FilterManager filterManager = new FilterManager()
+            {
+            };
+            filterManager.ShowDialog();
+            FilterBox.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+        }
     }
 }

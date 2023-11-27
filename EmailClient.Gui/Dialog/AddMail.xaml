@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmailClient.Gui.Dialog"
         mc:Ignorable="d"
-        Title="Add/Remove an email address" Width="300" SizeToContent="Height" ResizeMode="NoResize">
+        Title="Thêm/Xóa Email" Width="300" SizeToContent="Height" ResizeMode="NoResize">
     <StackPanel Orientation="Vertical">
         <ListBox x:Name="EmailList" ItemsSource="{Binding}" Height="300"/>
         <DockPanel Margin="0,2,0,0">
@@ -19,8 +19,8 @@
                     <Setter Property="Width" Value="50"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Click="Add">Add</Button>
-            <Button Click="Remove">Remove</Button>
+            <Button Click="Add">Thêm</Button>
+            <Button Click="Remove">Xóa</Button>
         </StackPanel>
     </StackPanel>
 </Window>
