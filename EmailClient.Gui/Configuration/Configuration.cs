@@ -42,10 +42,11 @@ public partial class Configuration: ObservableObject
     }
     [ObservableProperty]
     private Login general = new();
-    public ObservableCollection<Filter> Filters { get; } = new();
+    public ObservableCollection<Filter> Filters { get; set; } = new();
 
     private static JsonSerializerOptions serializerOptions = new() {
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter() },
+        WriteIndented = true
     };
     public static Configuration? Load(Stream stream)
     {
