@@ -130,5 +130,11 @@ namespace EmailClient.Gui
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;
         }
+
+        private void OpenFilterManager(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FilterManager();
+            dialog.ShowDialog();
+        }
     }
 }
