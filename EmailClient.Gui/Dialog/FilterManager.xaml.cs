@@ -38,9 +38,7 @@ namespace EmailClient.Gui.Dialog
                 Keywords = Keyword.Text.Split('|').ToList(),
                 Folder = EmailTextBox.Text
             };
-            var app = (App)Application.Current;
-            app.GlobalConfig.Filters.Add(filter);
-            _ = app.SaveConfig();
+            (DataContext as ICollection<Configuration.Filter>)?.Add(filter);
 
         }
         private void Remove(object sender, RoutedEventArgs e) { }

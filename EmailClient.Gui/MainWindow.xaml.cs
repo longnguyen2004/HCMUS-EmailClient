@@ -133,8 +133,14 @@ namespace EmailClient.Gui
 
         private void OpenFilterManager(object sender, RoutedEventArgs e)
         {
-            var dialog = new FilterManager();
+            var app = (App)Application.Current;
+            var dialog = new FilterManager()
+            {
+                DataContext = app.GlobalConfig.Filters
+            };
             dialog.ShowDialog();
+            _ = app.SaveConfig();
+            _vm.SyncFiltersWithDb();
         }
     }
 }
