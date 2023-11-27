@@ -87,11 +87,11 @@ namespace EmailClient.Gui.View
                 Cc = viewModel.Cc,
                 Bcc = viewModel.Bcc,
                 Subject = viewModel.Subject,
-                Body = (new BodyBuilder()
+                Body = new BodyBuilder()
                 {
                     TextBody = viewModel.Body,
                     Attachments = viewModel.Attachments
-                }).GetMessageBody(),
+                }.GetMessageBody(),
             };
             await smtpClient.SendEmail(email);
 
