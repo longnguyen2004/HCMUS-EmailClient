@@ -42,6 +42,8 @@ namespace EmailClient.Gui.Dialog
             (DataContext as ICollection<Configuration.Filter>)?.Add(filter);
 
         }
-        private void Remove(object sender, RoutedEventArgs e) { }
+        private void Remove(object sender, RoutedEventArgs e) {
+            (DataContext as ICollection<Configuration.Filter>)?.Remove((Configuration.Filter)FilterList.SelectedItem);
+        }
     }
 }

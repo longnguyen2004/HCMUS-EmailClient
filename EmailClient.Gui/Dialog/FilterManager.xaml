@@ -19,7 +19,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <DataGrid Grid.ColumnSpan="2" x:Name="EmailList" ItemsSource="{Binding}" Margin="10"
+        <DataGrid Grid.ColumnSpan="2" x:Name="FilterList" ItemsSource="{Binding}" Margin="10"
                   CanUserSortColumns="false" CanUserResizeColumns="False" CanUserResizeRows="False"
                   HeadersVisibility="Column" IsReadOnly="true" AutoGenerateColumns="False">
             <DataGrid.Columns>
