@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -41,7 +42,7 @@ public partial class Configuration: ObservableObject
     }
     [ObservableProperty]
     private Login general = new();
-    public ICollection<Filter> Filters { get; } = new List<Filter>();
+    public ObservableCollection<Filter> Filters { get; } = new();
 
     private static JsonSerializerOptions serializerOptions = new() {
         Converters = { new JsonStringEnumConverter() }
