@@ -17,7 +17,7 @@ public class EmailEntry
 
 public class Filter {
     public string Name { get; set; }
-    public IEnumerable<EmailEntry> Emails { get; }
+    public List<EmailEntry> Emails { get; } = new();
 }
 
 public partial class EmailContext: DbContext
