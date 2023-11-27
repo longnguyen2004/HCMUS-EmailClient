@@ -22,17 +22,18 @@ namespace EmailClient.Gui.Dialog
     /// </summary>
     public partial class FilterManager : Window
     {
-        public FilterManager()
-        {
-            InitializeComponent();
-        }
-        private void Add(object sender, RoutedEventArgs e) {
-            var FilterTypeDic = new Dictionary<string, Configuration.FilterType> {
+        Dictionary<string, Configuration.FilterType>  FilterTypeDic = new()  {
                 { "From", Configuration.FilterType.From },
                 { "Subject", Configuration.FilterType.Subject },
                 { "Content", Configuration.FilterType.Content },
                 { "Folder", Configuration.FilterType.Spam }
             };
+
+        public FilterManager()
+        {
+            InitializeComponent();
+        }
+        private void Add(object sender, RoutedEventArgs e) {
             var filter = new Configuration.Filter {
                 Type = FilterTypeDic[((ComboBoxItem)FilterType.SelectedItem).Name],
                 Keywords = Keyword.Text.Split('|').ToList(),
