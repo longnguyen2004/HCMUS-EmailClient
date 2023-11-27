@@ -29,22 +29,26 @@ public partial class EmailListViewModel : ObservableObject
     public EmailListViewModel(EmailContext context)
     {
         _context = context;
-        var app = (App)Application.Current;
         Task.Run(() =>
         {
             _context.Database.Migrate();
             _context.Emails.Load();
             _context.Filters.Load();
-            foreach (var filter in app.GlobalConfig.Filters)
-                if (_context.Filters.Find(filter.Folder) == null)
-                    _context.Filters.Add(new() { Name = filter.Folder });
-            _context.SaveChanges();
+            SyncFiltersWithDb();
         })
             .ContinueWith((_) =>
             {
                 Filters = new List<Filter>{ _inbox }.Concat(_context.Filters);
                 CurrentFilter = _inbox;
             });
+    }
+    public void SyncFiltersWithDb()
+    {
+        var app = (App)Application.Current;
+        foreach (var filter in app.GlobalConfig.Filters)
+            if (_context.Filters.Find(filter.Folder) == null)
+                _context.Filters.Add(new() { Name = filter.Folder });
+        _context.SaveChanges();
     }
     public void FilterMessages()
     {

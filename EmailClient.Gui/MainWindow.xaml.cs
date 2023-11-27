@@ -130,14 +130,16 @@ namespace EmailClient.Gui
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;
         }
-
-        private void FilterManage(object sender, RoutedEventArgs e)
+        private void OpenFilterManager(object sender, RoutedEventArgs e)
         {
-            FilterManager filterManager = new FilterManager()
+            var app = (App)Application.Current;
+            var dialog = new FilterManager()
             {
+                DataContext = app.GlobalConfig.Filters
             };
-            filterManager.ShowDialog();
-            FilterBox.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+            dialog.ShowDialog();
+            _ = app.SaveConfig();
+            _vm.SyncFiltersWithDb();
         }
     }
 }
