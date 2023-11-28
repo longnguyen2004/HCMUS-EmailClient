@@ -6,13 +6,13 @@ using System.Windows.Data;
 
 namespace EmailClient.Gui.Converter;
 
-[ValueConversion(typeof(IEnumerable<Email.EmailAddress>), typeof(string))]
-public class EmailListConverter: IValueConverter
+[ValueConversion(typeof(IEnumerable<object>), typeof(string))]
+public class ListJoinerConverter: IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var emailList = (IEnumerable<Email.EmailAddress>)value;
-        return string.Join(", ", emailList.Select(email => email.ToString()));
+        var emailList = (IEnumerable<object>)value;
+        return string.Join(", ", emailList.Select(e => e.ToString()));
     }
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
