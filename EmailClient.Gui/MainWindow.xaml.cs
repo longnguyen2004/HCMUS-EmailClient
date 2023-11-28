@@ -28,12 +28,12 @@ namespace EmailClient.Gui
     public partial class MainWindow : Window
     {
         private EmailContext? _context;
-        private EmailListViewModel _vm;
+        private EmailListViewModel? _vm;
         public MainWindow()
         {
             InitializeComponent();
         }
-        private async Task Login()
+        private void Login()
         {   
             var login = new Login();
             var ok = login.ShowDialog();
@@ -70,11 +70,11 @@ namespace EmailClient.Gui
         private async void LogoutThenLogin(object sender, RoutedEventArgs e)
         {
             await Logout();
-            await Login();
+            Login();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _ = Login();
+            Login();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -107,9 +107,9 @@ namespace EmailClient.Gui
             EmailBox.SelectedItem = tab;
         }
 
-        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await _vm.FetchMessages();
+            _ = _vm?.FetchMessages();
         }
 
         private void ComposeNewMail(object sender, RoutedEventArgs e)
@@ -139,7 +139,7 @@ namespace EmailClient.Gui
             };
             dialog.ShowDialog();
             _ = app.SaveConfig();
-            _vm.SyncFiltersWithDb();
+            _vm?.SyncFiltersWithDb();
         }
     }
 }
