@@ -34,11 +34,10 @@ public partial class EmailListViewModel : ObservableObject
             _context.Database.Migrate();
             _context.Emails.Load();
             _context.Filters.Load();
-            SyncFiltersWithDb();
         })
             .ContinueWith((_) =>
             {
-                Filters = new List<Filter>{ _inbox }.Concat(_context.Filters);
+                SyncFiltersWithDb();
                 CurrentFilter = _inbox;
             });
     }
@@ -49,6 +48,9 @@ public partial class EmailListViewModel : ObservableObject
             if (_context.Filters.Find(filter.Folder) == null)
                 _context.Filters.Add(new() { Name = filter.Folder });
         _context.SaveChanges();
+        Filters = new List<Filter>{ _inbox }.Concat(
+            _context.Filters.Include(filter => filter.Emails)
+        );
     }
     public void FilterMessages()
     {
