@@ -17,8 +17,8 @@ namespace EmailClient.Gui
     {
         public Configuration GlobalConfig { get; set; }
         public string RootDir { get; private set; }
-        private FileStream _configFile;
-        protected override void OnStartup(StartupEventArgs e)
+        private readonly FileStream _configFile;
+        public App(): base()
         {
             var exePath = Environment.ProcessPath;
             RootDir = Path.GetDirectoryName(exePath)!;
