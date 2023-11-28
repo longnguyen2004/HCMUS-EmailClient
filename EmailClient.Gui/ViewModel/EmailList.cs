@@ -33,7 +33,7 @@ public partial class EmailListViewModel : ObservableObject
         {
             _context.Database.Migrate();
             _context.Emails.Load();
-            _context.Filters.Load();
+            _context.Filters.Include(e => e.Emails).Load();
         })
             .ContinueWith((_) =>
             {
@@ -46,11 +46,9 @@ public partial class EmailListViewModel : ObservableObject
         var app = (App)Application.Current;
         foreach (var filter in app.GlobalConfig.Filters)
             if (_context.Filters.Find(filter.Folder) == null)
-                _context.Filters.Add(new() { Name = filter.Folder });
+                _context.Filters.Local.Add(new() { Name = filter.Folder });
         _context.SaveChanges();
-        Filters = new List<Filter>{ _inbox }.Concat(
-            _context.Filters.Include(filter => filter.Emails)
-        );
+        Filters = new List<Filter>{ _inbox }.Concat(_context.Filters.Local);
     }
     public void FilterMessages()
     {
