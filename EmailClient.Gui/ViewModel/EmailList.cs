@@ -84,12 +84,10 @@ public partial class EmailListViewModel : ObservableObject
         List<string> mailList = await pop3client.GetListing();
         List<EmailEntry> newEmails = new();
         int i = 0;
-        bool newMail = false;
         foreach (var uid in mailList)
         {
             ++i;
             if (_context.Emails.Find(uid) != null) continue;
-            newMail = true;
             MemoryStream stream = new(await pop3client.GetMessage(i));
             EmailEntry emailEntry = new()
             {
@@ -100,7 +98,8 @@ public partial class EmailListViewModel : ObservableObject
             newEmails.Add(emailEntry);
         }
         await pop3client.Disconnect();
-        if (newMail) EmailFilter.ApplyFilters(newEmails, app.GlobalConfig.Filters, _context.Filters);
+        if (newEmails.Count == 0) return;
+        EmailFilter.ApplyFilters(newEmails, app.GlobalConfig.Filters, _context.Filters);
         await Task.Run(() => {
             _context.AddRange(newEmails);
             _context.SaveChanges();
