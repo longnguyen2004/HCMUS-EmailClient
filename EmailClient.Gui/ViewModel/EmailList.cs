@@ -26,6 +26,7 @@ public partial class EmailListViewModel : ObservableObject
         FilterMessages();
     }
     private readonly EmailContext _context;
+    private Task _fetchTask;
     public EmailListViewModel(EmailContext context)
     {
         _context = context;
@@ -48,7 +49,7 @@ public partial class EmailListViewModel : ObservableObject
             if (_context.Filters.Find(filter.Folder) == null)
                 _context.Filters.Local.Add(new() { Name = filter.Folder });
         _context.SaveChanges();
-        Filters = new List<Filter>{ _inbox }.Concat(_context.Filters.Local);
+        Filters = new List<Filter> { _inbox }.Concat(_context.Filters.Local);
     }
     public void FilterMessages()
     {
@@ -66,44 +67,53 @@ public partial class EmailListViewModel : ObservableObject
                     filteredEmails = _context.Emails;
                     if (spamFolder != null)
                         filteredEmails = filteredEmails.Where(e => !e.Filters.Contains(spamFolder));
-                break;
+                    break;
 
                 default:
                     filteredEmails = CurrentFilter.Emails;
-                break;
+                    break;
             }
         }
         Emails = filteredEmails.Select(e => new EmailEntryViewModel(e));
     }
-    public async Task FetchMessages()
+    public Task FetchMessages()
     {
-        var app = (App)Application.Current;
-        Pop3Client pop3client = new(app.GlobalConfig.General.Pop3Host, app.GlobalConfig.General.Pop3Port);
-        await pop3client.Connect();
-        await pop3client.Login(app.GlobalConfig.General.Email, app.GlobalConfig.General.Password);
-        List<string> mailList = await pop3client.GetListing();
-        List<EmailEntry> newEmails = new();
-        int i = 0;
-        foreach (var uid in mailList)
+        if (_fetchTask != null && !_fetchTask.IsCompleted)
+            return _fetchTask;
+
+        _fetchTask = new Task(async () =>
         {
-            ++i;
-            if (_context.Emails.Find(uid) != null) continue;
-            MemoryStream stream = new(await pop3client.GetMessage(i));
-            EmailEntry emailEntry = new()
+            var app = (App)Application.Current;
+            Pop3Client pop3client = new(app.GlobalConfig.General.Pop3Host, app.GlobalConfig.General.Pop3Port);
+            await pop3client.Connect();
+            await pop3client.Login(app.GlobalConfig.General.Email, app.GlobalConfig.General.Password);
+            List<string> mailList = await pop3client.GetListing();
+            List<EmailEntry> newEmails = new();
+            int i = 0;
+            foreach (var uid in mailList)
             {
-                Id = uid,
-                IsRead = false,
-                Email = new Email((await MimeParser.Parse(stream))!)
-            };
-            newEmails.Add(emailEntry);
-        }
-        await pop3client.Disconnect();
-        if (newEmails.Count == 0) return;
-        EmailFilter.ApplyFilters(newEmails, app.GlobalConfig.Filters, _context.Filters);
-        await Task.Run(() => {
-            _context.AddRange(newEmails);
-            _context.SaveChanges();
+                ++i;
+                if (_context.Emails.Find(uid) != null) continue;
+                MemoryStream stream = new(await pop3client.GetMessage(i));
+                EmailEntry emailEntry = new()
+                {
+                    Id = uid,
+                    IsRead = false,
+                    Email = new Email((await MimeParser.Parse(stream))!)
+                };
+                newEmails.Add(emailEntry);
+            }
+            await pop3client.Disconnect();
+            if (newEmails.Count == 0) return;
+            EmailFilter.ApplyFilters(newEmails, app.GlobalConfig.Filters, _context.Filters);
+            await Task.Run(() =>
+            {
+                _context.AddRange(newEmails);
+                _context.SaveChanges();
+            });
+            FilterMessages();
         });
-        FilterMessages();
+        _fetchTask.Start();
+        return _fetchTask;
     }
 }
