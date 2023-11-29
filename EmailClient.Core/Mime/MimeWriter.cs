@@ -6,7 +6,7 @@ public partial class MimeHeaderValue
 {
     public async Task WriteToAsync(Stream stream, CancellationToken token = default)
     {
-        await stream.WriteAsync(Encoding.ASCII.GetBytes(Value), token);
+        await stream.WriteAsync(Encoding.ASCII.GetBytes(Value.ReplaceLineEndings("\r\n\t")), token);
         foreach (var (extraKey, extraValue) in ExtraValues)
         {
             await stream.WriteAsync(Encoding.ASCII.GetBytes("; "), token);
