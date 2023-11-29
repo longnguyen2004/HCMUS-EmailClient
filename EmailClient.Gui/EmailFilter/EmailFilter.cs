@@ -39,7 +39,7 @@ public class EmailFilter
                     if (email.Subject != null)
                         doc.AddTextField("subject", email.Subject, Field.Store.NO);
                     if (email.TextBody != null)
-                        doc.AddTextField("body", email.TextBody, Field.Store.NO);
+                        doc.AddTextField("content", email.TextBody, Field.Store.NO);
                     doc.AddStoredField("index", i);
                     writer.AddDocument(doc);
                 }
