@@ -60,8 +60,7 @@ namespace EmailClient.Gui.View
         private void AddAttachmentButton_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
-            Nullable<bool> result = dialog.ShowDialog();
-            if (result == false) return;
+            if (dialog.ShowDialog() != true) return;
             System.IO.FileInfo file = new(dialog.FileName);
             if (file.Length > 3 * 1024 * 1024)
                 MessageBox.Show("Kích cỡ file vượt quá 3mb", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
