@@ -112,7 +112,6 @@ namespace EmailClient.Gui
             if (_vm != null)
             {
                 await _vm.FetchMessages();
-                EmailList.GetBindingExpression(ListBox.ItemsSourceProperty).BindingGroup.UpdateSources();
             }
         }
 
