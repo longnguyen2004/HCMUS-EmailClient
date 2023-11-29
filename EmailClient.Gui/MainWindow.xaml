@@ -56,7 +56,7 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         <Button Grid.Row="2" Width="Auto" Click="OpenFilterManager" fa:Content.Icon="SolidPenToSquare" HorizontalAlignment="Right"/>
-        <ListBox ItemsSource="{Binding Emails}" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled" d:ItemsSource="{d:SampleData ItemCount=5}">
+        <ListBox x:Name="EmailList" ItemsSource="{Binding Emails}" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListBox.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                 <Style TargetType="{x:Type ListBoxItem}">

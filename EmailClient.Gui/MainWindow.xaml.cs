@@ -107,9 +107,13 @@ namespace EmailClient.Gui
             EmailBox.SelectedItem = tab;
         }
 
-        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            _ = _vm?.FetchMessages();
+            if (_vm != null)
+            {
+                await _vm.FetchMessages();
+                EmailList.GetBindingExpression(ListBox.ItemsSourceProperty).BindingGroup.UpdateSources();
+            }
         }
 
         private void ComposeNewMail(object sender, RoutedEventArgs e)
