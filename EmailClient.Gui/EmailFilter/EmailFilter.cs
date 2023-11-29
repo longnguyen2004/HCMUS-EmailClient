@@ -39,7 +39,7 @@ public class EmailFilter
                     if (email.Subject != null)
                         doc.AddTextField("subject", email.Subject, Field.Store.NO);
                     if (email.TextBody != null)
-                        doc.AddTextField("body", email.TextBody, Field.Store.NO);
+                        doc.AddTextField("content", email.TextBody, Field.Store.NO);
                     doc.AddStoredField("index", i);
                     writer.AddDocument(doc);
                 }
@@ -58,36 +58,38 @@ public class EmailFilter
                         {
                             var boolQuery = new BooleanQuery();
                             foreach (var keyword in filter.Keywords)
-                                boolQuery.Add(new TermQuery(new("from", keyword)), Occur.SHOULD);
+                                boolQuery.Add(new TermQuery(new("from", keyword.ToLower())), Occur.SHOULD);
                             query = boolQuery;
                         }
                         break;
 
                         case Configuration.FilterType.Subject:
                         {
-                            query = new MultiPhraseQuery
-                            {
-                                filter.Keywords.Select(e => new Term("subject", e)).ToArray()
-                            };
+                            var boolQuery = new BooleanQuery();
+                            foreach (var keyword in filter.Keywords)
+                                boolQuery.Add(new TermQuery(new("subject", keyword.ToLower())), Occur.SHOULD);
+                            query = boolQuery;
                         }
                         break;
 
                         case Configuration.FilterType.Content:
                         {
-                            query = new MultiPhraseQuery
-                            {
-                                filter.Keywords.Select(e => new Term("content", e)).ToArray()
-                            };
+                            var boolQuery = new BooleanQuery();
+                            foreach (var keyword in filter.Keywords)
+                                boolQuery.Add(new TermQuery(new("content", keyword.ToLower())), Occur.SHOULD);
+                            query = boolQuery;
                         }
                         break;
 
                         case Configuration.FilterType.Spam:
                         {
-                            query = new MultiPhraseQuery
+                            var boolQuery = new BooleanQuery();
+                            foreach (var keyword in filter.Keywords)
                             {
-                                filter.Keywords.Select(e => new Term("subject", e.ToLower())).ToArray(),
-                                filter.Keywords.Select(e => new Term("content", e.ToLower())).ToArray()
-                            };
+                                boolQuery.Add(new TermQuery(new("subject", keyword.ToLower())), Occur.SHOULD);
+                                boolQuery.Add(new TermQuery(new("content", keyword.ToLower())), Occur.SHOULD);
+                            }
+                            query = boolQuery;
                         }
                         break;
 
