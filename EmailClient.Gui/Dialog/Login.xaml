@@ -4,13 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmailClient.Gui.Dialog"
+        xmlns:nud="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
         mc:Ignorable="d"
         Title="Login" Height="300" Width="400">
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBox">
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+            <Style TargetType="PasswordBox">
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1.5*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -27,7 +36,8 @@
         </DockPanel>
         <Grid Grid.Row="2" Grid.Column="0" Margin="10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1.25*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
@@ -45,7 +55,8 @@
         </Grid>
         <Grid Grid.Row="2" Grid.Column="1" Margin="10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1.25*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
@@ -58,6 +69,11 @@
             </Label>
             <Label Grid.Row="1" Grid.Column="0">Host</Label>
             <Label Grid.Row="2" Grid.Column="0">Port</Label>
+            <DockPanel Grid.Row="3" Grid.ColumnSpan="2">
+                <Label DockPanel.Dock="Left">Autoload</Label>
+                <Label DockPanel.Dock="Right">(giây)</Label>
+                <nud:ULongUpDown IsUpdateValueWhenLostFocus="True" Value="{Binding Autoload, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" StepSize="10" VerticalAlignment="Center"/>
+            </DockPanel>
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Pop3Host}"/>
             <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Pop3Port}"/>
         </Grid>

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Dirkster.NumericUpDownLib" Version="3.4.0" />
     <PackageReference Include="DSaladin.FontAwesome.WPF" Version="6.3.0" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
