@@ -3,6 +3,7 @@ using System.Windows;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EmailClient.Database;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmailClient.Gui.ViewModel;
 
-public partial class EmailListViewModel : ObservableObject
+public partial class EmailListViewModel : ObservableObject, IDisposable
 {
     private const string _inboxStr = "Inbox";
     private static readonly Filter _inbox = new() { Name = _inboxStr };
@@ -30,17 +31,11 @@ public partial class EmailListViewModel : ObservableObject
     public EmailListViewModel(EmailContext context)
     {
         _context = context;
-        Task.Run(() =>
-        {
-            _context.Database.Migrate();
-            _context.Emails.Load();
-            _context.Filters.Include(e => e.Emails).Load();
-        })
-            .ContinueWith((_) =>
-            {
-                SyncFiltersWithDb();
-                CurrentFilter = _inbox;
-            });
+        _context.Database.Migrate();
+        _context.Emails.Load();
+        _context.Filters.Include(e => e.Emails).Load();
+        SyncFiltersWithDb();
+        CurrentFilter = _inbox;
     }
     public void SyncFiltersWithDb()
     {
