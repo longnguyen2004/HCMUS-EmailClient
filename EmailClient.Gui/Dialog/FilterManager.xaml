@@ -4,8 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmailClient.Gui.Dialog"
+        xmlns:conv="clr-namespace:EmailClient.Gui.Converter"
         mc:Ignorable="d"
         Title="Quản lý bộ lọc" Width="400" SizeToContent="Height" ResizeMode="NoResize">
+    <Window.Resources>
+        <conv:ListJoinerConverter x:Key="listJoinerConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -24,7 +28,7 @@
                   HeadersVisibility="Column" IsReadOnly="true" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Loại" Binding="{Binding Type}" />
-                <DataGridTextColumn Header="Từ khóa" Width="*" Binding="{Binding Keywords}" />
+                <DataGridTextColumn Header="Từ khóa" Width="*" Binding="{Binding Keywords, Converter={StaticResource listJoinerConverter}}" />
                 <DataGridTextColumn Header="Thư mục" Binding="{Binding Folder}" />
             </DataGrid.Columns>
         </DataGrid>

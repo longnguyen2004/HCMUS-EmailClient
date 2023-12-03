@@ -23,6 +23,8 @@ public partial class Configuration: ObservableObject
         private string pop3Host = string.Empty;
         [ObservableProperty]
         private ushort pop3Port;
+        [ObservableProperty]
+        private ulong autoload = 0;
 
         public object Clone()
         {

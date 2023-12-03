@@ -19,6 +19,7 @@ using EmailClient.Gui.View;
 using EmailClient.Gui.ViewModel;
 using EmailClient.Gui.Dialog;
 using EmailClient.Gui.Converter;
+using System.Threading;
 
 namespace EmailClient.Gui
 {
@@ -29,12 +30,13 @@ namespace EmailClient.Gui
     {
         private EmailContext? _context;
         private EmailListViewModel? _vm;
+        private CancellationTokenSource? _cancelAutoload;
         public MainWindow()
         {
             InitializeComponent();
         }
         private void Login()
-        {   
+        {
             var login = new Login();
             var ok = login.ShowDialog();
             if (ok != true)
@@ -53,12 +55,28 @@ namespace EmailClient.Gui
             _context = new(Path.Join(messagePath, $"{app.GlobalConfig.General.Email}.db"));
             _vm = new(_context);
             DataContext = _vm;
+
+            _cancelAutoload = new();
+            var delay = app.GlobalConfig.General.Autoload;
+            new Task(async () =>
+            {
+                if (delay == 0)
+                    return;
+                while (!_cancelAutoload.Token.IsCancellationRequested)
+                {
+                    if (_vm != null)
+                        await _vm.FetchMessages();
+                    await Task.Delay((int)delay * 1000);
+                }
+            }, _cancelAutoload.Token).Start();
         }
         private async Task Logout()
         {
             AccountBar.Header = "";
             EmailBox.Items.Clear();
             DataContext = null;
+            if (_cancelAutoload != null)
+                _cancelAutoload.Cancel();
             if (_context == null) return;
             await Task.Run(() =>
             {
