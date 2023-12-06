@@ -160,7 +160,9 @@ namespace EmailClient.Gui
             };
             dialog.ShowDialog();
             _ = app.SaveConfig();
+            _context?.Filters.Local.Clear();
             _vm?.SyncFiltersWithDb();
+            _vm?.FilterMessages();
         }
     }
 }
