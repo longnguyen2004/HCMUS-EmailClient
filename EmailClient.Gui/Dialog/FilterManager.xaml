@@ -22,6 +22,7 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <DataGrid Grid.ColumnSpan="2" x:Name="FilterList" ItemsSource="{Binding}" Margin="10"
                   CanUserSortColumns="false" CanUserResizeColumns="False" CanUserResizeRows="False"
@@ -42,9 +43,11 @@
         </ComboBox>
         <Label Grid.Row="3" Content="Từ khóa"/>
         <TextBox Margin="0,0,10,0" Grid.Row="3" Grid.Column="1" TextAlignment="Left" x:Name="Keyword" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
-        <Label Grid.Row="4" Content="Thư mục"/>
-        <TextBox Margin="0,0,10,0" Grid.Row="4" Grid.Column="1" TextAlignment="Left" x:Name="EmailTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>
-        <Button Grid.Row="5" Grid.ColumnSpan="2" Click="Add" Margin="10,10,10,10">Thêm</Button>
+        <Label Grid.Row="4" Grid.Column="1" Content="Lưu ý: các từ khóa ngăn cách nhau bởi ký tự  ' | '" Margin="0,0,10,0" Foreground="Gray"/>
+        <Label Grid.Row="5" Content="Thư mục"/>
+        <TextBox Margin="0,0,10,0" Grid.Row="5" Grid.Column="1" TextAlignment="Left" x:Name="EmailTextBox" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" />
+        <Button Grid.Row="6" Grid.ColumnSpan="2" Click="Add" Margin="10,10,10,10">Thêm</Button>
+        
 
     </Grid>
 </Window>
