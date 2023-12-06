@@ -26,7 +26,7 @@ namespace EmailClient.Gui.Dialog
                 { "From", Configuration.FilterType.From },
                 { "Subject", Configuration.FilterType.Subject },
                 { "Content", Configuration.FilterType.Content },
-                { "Folder", Configuration.FilterType.Spam }
+                { "SubjectContent", Configuration.FilterType.SubjectContent }
             };
 
         public FilterManager()
