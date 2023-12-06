@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmailClient.Gui.ViewModel;
 
-public partial class EmailListViewModel : ObservableObject, IDisposable
+public partial class EmailListViewModel : ObservableObject
 {
     private const string _inboxStr = "Inbox";
     private static readonly Filter _inbox = new() { Name = _inboxStr };
