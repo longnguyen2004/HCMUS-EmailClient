@@ -162,6 +162,11 @@ namespace EmailClient.Gui
             _ = app.SaveConfig();
             _context?.Filters.Local.Clear();
             _vm?.SyncFiltersWithDb();
+            EmailFilter.ApplyFilters(
+                _context!.Emails.Local.ToList(),
+                app.GlobalConfig.Filters,
+                _context!.Filters
+            );
             _vm?.FilterMessages();
         }
     }
