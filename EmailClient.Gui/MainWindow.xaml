@@ -8,7 +8,7 @@
         xmlns:component="clr-namespace:EmailClient.Gui.View"
         xmlns:ct="clr-namespace:EmailClient.Gui.Control"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="Inboxinator 3000" Height="450" Width="800"
         Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>

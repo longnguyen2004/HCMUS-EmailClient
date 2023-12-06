@@ -39,7 +39,7 @@
             <ComboBoxItem Name="From">Dựa vào địa chỉ người gửi</ComboBoxItem>
             <ComboBoxItem Name="Subject">Dựa trên subject</ComboBoxItem>
             <ComboBoxItem Name="Content">Dựa trên nội dung</ComboBoxItem>
-            <ComboBoxItem Name="Folder">Thư mục cụ thể</ComboBoxItem>
+            <ComboBoxItem Name="SubjectContent">Dựa trên subject + nội dung</ComboBoxItem>
         </ComboBox>
         <Label Grid.Row="3" Content="Từ khóa"/>
         <TextBox Margin="0,0,10,0" Grid.Row="3" Grid.Column="1" TextAlignment="Left" x:Name="Keyword" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto"/>

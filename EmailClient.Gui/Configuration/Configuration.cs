@@ -35,7 +35,7 @@ public partial class Configuration: ObservableObject
         From,
         Subject,
         Content,
-        Spam
+        SubjectContent
     }
     public class Filter {
         public FilterType Type { get; set; } = FilterType.From;

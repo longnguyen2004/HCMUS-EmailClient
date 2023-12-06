@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EmailClient.Gui.Dialog"
         xmlns:nud="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
         mc:Ignorable="d"
-        Title="Login" Height="300" Width="400">
+        Title="Đăng nhập" Height="300" Width="400">
     <Grid>
         <Grid.Resources>
             <Style TargetType="TextBox">

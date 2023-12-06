@@ -81,7 +81,7 @@ public class EmailFilter
                         }
                         break;
 
-                        case Configuration.FilterType.Spam:
+                        case Configuration.FilterType.SubjectContent:
                         {
                             var boolQuery = new BooleanQuery();
                             foreach (var keyword in filter.Keywords)

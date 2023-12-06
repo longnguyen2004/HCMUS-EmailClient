@@ -27,7 +27,7 @@ public partial class EmailListViewModel : ObservableObject
         FilterMessages();
     }
     private readonly EmailContext _context;
-    private Task _fetchTask;
+    private Task? _fetchTask;
     public EmailListViewModel(EmailContext context)
     {
         _context = context;

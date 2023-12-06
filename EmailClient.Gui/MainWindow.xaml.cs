@@ -151,7 +151,7 @@ namespace EmailClient.Gui
             EmailBox.Items.Add(tab);
             EmailBox.SelectedItem = tab;
         }
-        private void OpenFilterManager(object sender, RoutedEventArgs e)
+        private async void OpenFilterManager(object sender, RoutedEventArgs e)
         {
             var app = (App)Application.Current;
             var dialog = new FilterManager()
@@ -160,7 +160,16 @@ namespace EmailClient.Gui
             };
             dialog.ShowDialog();
             _ = app.SaveConfig();
+            _context?.Filters.Local.Clear();
+            _context?.SaveChanges();
             _vm?.SyncFiltersWithDb();
+            EmailFilter.ApplyFilters(
+                _context!.Emails.Local.ToList(),
+                app.GlobalConfig.Filters,
+                _context!.Filters
+            );
+            _context?.SaveChanges();
+            _vm?.FilterMessages();
         }
     }
 }
