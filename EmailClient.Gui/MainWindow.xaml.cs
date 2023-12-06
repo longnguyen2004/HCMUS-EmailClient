@@ -161,6 +161,7 @@ namespace EmailClient.Gui
             dialog.ShowDialog();
             _ = app.SaveConfig();
             _context?.Filters.Local.Clear();
+            _context?.SaveChanges();
             _vm?.SyncFiltersWithDb();
             EmailFilter.ApplyFilters(
                 _context!.Emails.Local.ToList(),
