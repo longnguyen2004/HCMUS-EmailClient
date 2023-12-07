@@ -73,9 +73,7 @@ public partial class TextCommandClient : IAsyncDisposable
     {
         if (!Connected)
             throw new ApplicationException("Client not connected!");
-        return SocketStream!.WriteAsync(buffer).AsTask().WaitAsync(
-            new TimeSpan(0, 0, 5)
-        );
+        return SocketStream!.WriteAsync(buffer).AsTask();
     }
     public Task ReceiveExactly(ArraySegment<byte> buffer)
     {
