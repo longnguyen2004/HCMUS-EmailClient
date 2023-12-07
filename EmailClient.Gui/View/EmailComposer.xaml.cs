@@ -63,7 +63,7 @@ namespace EmailClient.Gui.View
             if (dialog.ShowDialog() != true) return;
             System.IO.FileInfo file = new(dialog.FileName);
             if (file.Length > 3 * 1024 * 1024)
-                MessageBox.Show("Kích cỡ file vượt quá 3mb", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Kích cỡ file vượt quá 3MB", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             else
                 viewModel.Attachments.Add(new AttachmentLocal(file));
         }
