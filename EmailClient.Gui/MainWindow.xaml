@@ -62,10 +62,10 @@
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsRead}" Value="true">
-                            <Setter Property="Background" Value="LightGray" />
+                            <Setter Property="Background" Value="White" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsRead}" Value="false">
-                            <Setter Property="Background" Value="White" />
+                            <Setter Property="Background" Value="LightGray" />
                         </DataTrigger>
                     </Style.Triggers>
                     <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItem_PreviewMouseLeftButtonUp"/>
