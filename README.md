@@ -40,51 +40,51 @@ THÀNH PHỐ HỒ CHÍ MINH 2023 
 
 # Nội dung báo cáo
 
-[**I.** **Giới thiệu** [2](#_Toc153140156)](#_Toc153140156)
+[**I.** **Giới thiệu** [2](#_Toc153140156)]
 
-[**1.** **Giới thiệu chung** [2](#_Toc153140157)](#_Toc153140157)
+[**1.** **Giới thiệu chung** [2](#_Toc153140157)]
 
-[**2.** **Mô tả đồ án** [2](#_Toc153140158)](#_Toc153140158)
+[**2.** **Mô tả đồ án** [2](#_Toc153140158)]
 
-[**3.** **Thành viên nhóm** [2](#_Toc153140159)](#_Toc153140159)
+[**3.** **Thành viên nhóm** [2](#_Toc153140159)]
 
-[**4.** **Tài nguyên liên kết** [2](#_Toc153140160)](#_Toc153140160)
+[**4.** **Tài nguyên liên kết** [2](#_Toc153140160)]
 
-[**II.** **Đánh giá mức độ hoàn thành** [3](#_Toc153140161)](#_Toc153140161)
+[**II.** **Đánh giá mức độ hoàn thành** [3](#_Toc153140161)]
 
-[**1.** **Yêu cầu nội dung thực hiện** [3](#_Toc153140162)](#_Toc153140162)
+[**1.** **Yêu cầu nội dung thực hiện** [3](#_Toc153140162)]
 
-[**2.** **Đánh giá** [3](#_Toc153140163)](#_Toc153140163)
+[**2.** **Đánh giá** [3](#_Toc153140163)]
 
-[**III.** **Kịch bản giao tiếp của chương trình** [4](#_Toc153140164)](#_Toc153140164)
+[**III.** **Kịch bản giao tiếp của chương trình** [4](#_Toc153140164)]
 
-[**1.** **Giao thức trao đổi giữa Client và Server** [4](#_Toc153140165)](#_Toc153140165)
+[**1.** **Giao thức trao đổi giữa Client và Server** [4](#_Toc153140165)]
 
-[**2.** **Cấu trúc thông điệp** [4](#_Toc153140166)](#_Toc153140166)
+[**2.** **Cấu trúc thông điệp** [4](#_Toc153140166)]
 
-[**3.** **Kiểu dữ liệu của thông điệp** [5](#_Toc153140167)](#_Toc153140167)
+[**3.** **Kiểu dữ liệu của thông điệp** [5](#_Toc153140167)]
 
-[**4.** **Cách tổ chức cơ sở dữ liệu** [6](#_Toc153140168)](#_Toc153140168)
+[**4.** **Cách tổ chức cơ sở dữ liệu** [6](#_Toc153140168)]
 
-[**IV.** **Môi trường lập trình và các framework hỗ trợ** [6](#_Toc153140169)](#_Toc153140169)
+[**IV.** **Môi trường lập trình và các framework hỗ trợ** [6](#_Toc153140169)]
 
-[**1.** **Môi trường lập trình** [6](#_Toc153140170)](#_Toc153140170)
+[**1.** **Môi trường lập trình** [6](#_Toc153140170)]
 
-[**2.** **Các framework hỗ trợ** [6](#_Toc153140171)](#_Toc153140171)
+[**2.** **Các framework hỗ trợ** [6](#_Toc153140171)]
 
-[**V.** **Hướng dẫn sử dụng các tính năng chương trình** [6](#_Toc153140172)](#_Toc153140172)
+[**V.** **Hướng dẫn sử dụng các tính năng chương trình** [6](#_Toc153140172)]
 
-[**1.** **Khởi động chương trình** [6](#_Toc153140173)](#_Toc153140173)
+[**1.** **Khởi động chương trình** [6](#_Toc153140173)]
 
-[**2.** **Đăng nhập và Autoload** [8](#_Toc153140174)](#_Toc153140174)
+[**2.** **Đăng nhập và Autoload** [8](#_Toc153140174)]
 
-[**3.** **Gửi và nhận email** [9](#_Toc153140175)](#_Toc153140175)
+[**3.** **Gửi và nhận email** [9](#_Toc153140175)]
 
-[**4.** **Bộ lọc email** [15](#_Toc153140176)](#_Toc153140176)
+[**4.** **Bộ lọc email** [15](#_Toc153140176)]
 
-[**VI.** **Bảng phân chia công việc** [16](#_Toc153140177)](#_Toc153140177)
+[**VI.** **Bảng phân chia công việc** [16](#_Toc153140177)]
 
-[**VII.** **Các nguồn tài liệu tham khảo** [18](#_Toc153140178)](#_Toc153140178)
+[**VII.** **Các nguồn tài liệu tham khảo** [18](#_Toc153140178)]
 
 1.  <span id="_Toc153140156" class="anchor"></span>**Giới thiệu**
 
@@ -100,9 +100,8 @@ THÀNH PHỐ HỒ CHÍ MINH 2023 
 
 - Hình thức: Bài tập nhóm
 
-- Giảng viên phụ trách: Huỳnh Thụy Bảo Trân (Lý thuyết)
-
-> Chung Thùy Linh (Thực hành)
+- Giảng viên phụ trách: Huỳnh Thụy Bảo Trân (Lý thuyết) 
+                        Chung Thùy Linh (Thực hành)
 
 1.  <span id="_Toc153140158" class="anchor"></span>**Mô tả đồ án**
 
