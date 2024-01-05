@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailClient.Core", "EmailClient.Core\EmailClient.Core.csproj", "{B04DDF8A-25C5-425A-9C6E-DC2A24FCC1FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailClient.CommandLine", "EmailClient.CommandLine\EmailClient.CommandLine.csproj", "{39601DB5-3E83-422B-BE7F-A8FD20175A19}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailClient.Database", "EmailClient.Database\EmailClient.Database.csproj", "{7FE399EC-1BA4-486F-83E9-4317F28487E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailClient.Gui", "EmailClient.Gui\EmailClient.Gui.csproj", "{A34A6B85-7731-41E3-96D3-919D23A4E194}"
@@ -24,10 +22,6 @@ Global
 		{B04DDF8A-25C5-425A-9C6E-DC2A24FCC1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B04DDF8A-25C5-425A-9C6E-DC2A24FCC1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B04DDF8A-25C5-425A-9C6E-DC2A24FCC1FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39601DB5-3E83-422B-BE7F-A8FD20175A19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39601DB5-3E83-422B-BE7F-A8FD20175A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39601DB5-3E83-422B-BE7F-A8FD20175A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39601DB5-3E83-422B-BE7F-A8FD20175A19}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FE399EC-1BA4-486F-83E9-4317F28487E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FE399EC-1BA4-486F-83E9-4317F28487E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FE399EC-1BA4-486F-83E9-4317F28487E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
